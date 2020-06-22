@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "name": "Multi Shot ANN example",
+    "id": "msann_freesurfer",
+    "version": "v1.0.0",
+    "repository": "",
+    "description": "..."
+  },
+  "computation": {
+    "type": "docker",
+    "dockerImage": "msann",
+    "command": [
+      "python",
+      "\/computation\/local.py"
+    ],
+    "remote": {
+      "type": "docker",
+      "dockerImage": "msann",
+      "command": [
+        "python",
+        "\/computation\/remote.py"
+      ]
+    },
+    "input": {
+      "startingValue":
+      {
+        "defaultValue": 0,
+        "label": "Starting input",
+        "min": 0,
+        "step": 1,
+        "type": "number",
+        "source": "owner"
+      }
+
+    },
+    "output": {
+      "outputNumber" : {
+        "type": "number"
+      }
+    },
+    "display": [
+    ]
+  }
+}

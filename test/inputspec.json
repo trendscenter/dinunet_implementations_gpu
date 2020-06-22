@@ -1,0 +1,58 @@
+[
+  {
+    "data_dir": {
+      "value": "subject_stats_S00"
+    },
+    "label_dir": {
+      "value": "label_S00"
+    },
+    "split_dir": {
+      "value": "split_S00"
+    },
+    "mode": {
+      "value": "train"
+    }
+  },
+  {
+    "data_dir": {
+      "value": "subject_stats_S01"
+    },
+    "label_dir": {
+      "value": "label_S01"
+    },
+    "split_dir": {
+      "value": "split_S01"
+    },
+    "mode": {
+      "value": "train"
+    }
+  },
+  {
+    "data_dir": {
+      "value": "subject_stats_S02"
+    },
+    "label_dir": {
+      "value": "label_S02"
+    },
+    "split_dir": {
+      "value": "split_S02"
+    },
+    "mode": {
+      "value": "train"
+    }
+  },
+  {
+    "data_dir": {
+      "value": "subject_stats_S03"
+    },
+    "label_dir": {
+      "value": "label_S03"
+    },
+    "split_dir": {
+      "value": "split_S03"
+    },
+    "mode": {
+      "value": "train"
+    }
+  }
+]
