@@ -32,11 +32,11 @@ def init_nn_params(cache):
     out = {}
     out['input_size'] = 1
     out['num_class'] = 2
-    out['epochs'] = 11
+    out['epochs'] = 3
     out['learning_rate'] = 0.001
-    cache['batch_size'] = 16
-    cache['eid'] = 'volumetric'
-    out['eid'] = 'volumetric'
+    cache['batch_size'] = 8
+    cache['eid'] = 'vbm'
+    out['eid'] = 'vbm'
     cache['global_test_score'] = []
     return out
 
