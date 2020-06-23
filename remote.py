@@ -30,12 +30,11 @@ def aggregate_sites_grad(input):
 
 def init_nn_params(cache):
     out = {}
-    out['input_size'] = 66
-    out['hidden_sizes'] = [16, 8, 4, 2]
+    out['input_size'] = 1
     out['num_class'] = 2
-    out['epochs'] = 21
+    out['epochs'] = 11
     out['learning_rate'] = 0.001
-    cache['batch_size'] = 32
+    cache['batch_size'] = 16
     cache['eid'] = 'volumetric'
     out['eid'] = 'volumetric'
     cache['global_test_score'] = []

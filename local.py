@@ -7,18 +7,17 @@ from os import sep
 
 import torch
 
-from classification import FreeSurferDataset, train, evaluation
+from classification import NiftiDataset, train, evaluation
 from core import utils
-from core.models import MSANNet
+from core.models import VBMNet
 
-
+# import pydevd_pycharm
 # pydevd_pycharm.settrace('172.17.0.1', port=8881, stdoutToServer=True, stderrToServer=True, suspend=False)
 
 
 def init_nn(cache, init_weights=False):
     device = cache.get('device', 'cpu')
-    model = MSANNet(in_size=cache['input_size'], hidden_sizes=cache['hidden_sizes'],
-                    out_size=cache['num_class'])
+    model = VBMNet(in_size=cache['input_size'],out_size=cache['num_class'])
     optimizer = torch.optim.Adam(model.parameters(), lr=cache['learning_rate'])
     if init_weights:
         torch.manual_seed(cache['seed'])
@@ -27,9 +26,9 @@ def init_nn(cache, init_weights=False):
 
 
 def init_dataset(cache, state):
-    dataset = FreeSurferDataset(files_dir=state['baseDirectory'] + sep + cache['data_dir'],
-                                labels_file=state['baseDirectory'] + sep + cache['label_dir'],
-                                mode=cache['mode'])
+    dataset = NiftiDataset(files_dir=state['baseDirectory'] + sep + cache['data_dir'],
+                           labels_file=state['baseDirectory'] + sep + cache['label_dir'],
+                           mode=cache['mode'])
     split = json.loads(
         open(state['baseDirectory'] + sep + cache['split_dir'] + sep + cache['split_file']).read())
     dataset.load_indices(files=split['train'])

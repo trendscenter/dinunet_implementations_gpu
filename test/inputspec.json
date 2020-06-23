@@ -1,7 +1,7 @@
 [
   {
     "data_dir": {
-      "value": "subject_stats_S00"
+      "value": "nifti_file_S00"
     },
     "label_dir": {
       "value": "label_S00"
@@ -15,7 +15,7 @@
   },
   {
     "data_dir": {
-      "value": "subject_stats_S01"
+      "value": "nifti_file_S01"
     },
     "label_dir": {
       "value": "label_S01"
@@ -29,7 +29,7 @@
   },
   {
     "data_dir": {
-      "value": "subject_stats_S02"
+      "value": "nifti_file_S02"
     },
     "label_dir": {
       "value": "label_S02"
@@ -43,7 +43,7 @@
   },
   {
     "data_dir": {
-      "value": "subject_stats_S03"
+      "value": "nifti_file_S03"
     },
     "label_dir": {
       "value": "label_S03"

@@ -62,10 +62,13 @@ def fmt(*args):
     return ','.join(str(s) for s in args)
 
 
-def create_k_fold_splits(files, k=0, save_to_dir=None, shuffle_files=True):
+def create_k_fold_splits(files, k=0, save_to_dir=None, shuffle_files=True, seed=None):
     from random import shuffle
     from itertools import chain
     import numpy as np
+
+    if seed:
+        np.random.seed(seed)
 
     if shuffle_files:
         shuffle(files)

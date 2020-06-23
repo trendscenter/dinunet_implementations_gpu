@@ -14,9 +14,11 @@ from core.torchutils import NNDataLoader
 sep = os.sep
 from core.measurements import new_metrics, Avg
 import numpy as np
+import nibabel as ni
+import torchvision.transforms as tmf
 
 
-class FreeSurferDataset(Dataset):
+class NiftiDataset(Dataset):
     def __init__(self, **kw):
         self.files_dir = kw['files_dir']
         self.labels_dir = kw['labels_file']
@@ -25,9 +27,9 @@ class FreeSurferDataset(Dataset):
 
     def load_indices(self, files, **kw):
         labels_file = os.listdir(self.labels_dir)[0]
-        labels = pd.read_csv(self.labels_dir + os.sep + labels_file).set_index('freesurferfile')
+        labels = pd.read_csv(self.labels_dir + os.sep + labels_file).set_index('niftifile')
         for file in files:
-            y = labels.loc[file]['label']
+            y = labels.loc[file]['isControl']
             """
             int64 could not be json serializable.
             """
@@ -35,12 +37,14 @@ class FreeSurferDataset(Dataset):
 
     def __getitem__(self, ix):
         file, y = self.indices[ix]
-        data, errors = data_parser.parse_subj_volume_files(self.files_dir, [file])
-        x = data.iloc[0].values
-        return {'inputs': torch.tensor(x), 'labels': torch.tensor(y)}
+        nif = np.array(ni.load(self.files_dir + sep + file).dataobj)[None, :]
+        return {'inputs': torch.tensor(nif), 'labels': torch.tensor(y)}
 
     def __len__(self):
         return len(self.indices)
+
+    def get_transformations(self):
+        return tmf.Compose([tmf.RandomHorizontalFlip, tmf.RandomVerticalFlip])
 
     def get_loader(self, shuffle=False, batch_size=None, num_workers=0, pin_memory=True, **kw):
         return NNDataLoader.get_loader(dataset=self, shuffle=shuffle, batch_size=batch_size,
@@ -48,8 +52,8 @@ class FreeSurferDataset(Dataset):
 
 
 def get_next_batch(cache, state):
-    dataset = FreeSurferDataset(files_dir=state['baseDirectory'] + sep + cache['data_dir'],
-                                labels_file=state['baseDirectory'] + sep + cache['label_dir'], mode=cache['mode'])
+    dataset = NiftiDataset(files_dir=state['baseDirectory'] + sep + cache['data_dir'],
+                           labels_file=state['baseDirectory'] + sep + cache['label_dir'], mode=cache['mode'])
     dataset.indices = cache['data_indices'][cache['cursor']:]
     loader = dataset.get_loader(batch_size=cache['batch_size'], num_workers=cache.get('num_workers', 0),
                                 pin_memory=cache.get('pin_memory', True))
@@ -105,9 +109,9 @@ def evaluation(cache, state, model, split_key, **kw):
     eval_score = new_metrics(cache['num_class'])
     with torch.no_grad(), open(
             state['baseDirectory'] + sep + cache['split_dir'] + sep + cache['split_file']) as split_file:
-        eval_dataset = FreeSurferDataset(files_dir=state['baseDirectory'] + sep + cache['data_dir'],
-                                         labels_file=state['baseDirectory'] + sep + cache['label_dir'],
-                                         mode=cache['mode'])
+        eval_dataset = NiftiDataset(files_dir=state['baseDirectory'] + sep + cache['data_dir'],
+                                    labels_file=state['baseDirectory'] + sep + cache['label_dir'],
+                                    mode=cache['mode'])
         split = json.loads(split_file.read())
         eval_dataset.load_indices(files=split[split_key])
         eval_dataloader = eval_dataset.get_loader(shuffle=False, batch_size=cache['batch_size'],
