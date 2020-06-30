@@ -32,6 +32,7 @@ def eval(data_loader, model, device):
         score.accumulate(sc)
     return score
 
+
 torch.backends.cudnn.enabled = False
 LR = 0.001
 BZ = 16
@@ -48,7 +49,8 @@ for fold in range(10):
         test.append(get_dataset(conf, fold, 'test'))
 
     train_dset = ConcatDataset(train)
-    train_loader = NNDataLoader.new(dataset=train_dset, batch_size=BZ, pin_memory=True, shuffle=True)
+    train_loader = NNDataLoader.new(dataset=train_dset, batch_size=BZ,
+                                    pin_memory=True, shuffle=True, drop_last=True)
 
     val_dset = ConcatDataset(val)
     val_loader = NNDataLoader.new(dataset=val_dset, batch_size=BZ, pin_memory=True, shuffle=True)
