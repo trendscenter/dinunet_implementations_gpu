@@ -11,13 +11,18 @@ from classification import NiftiDataset, train, evaluation
 from core import utils
 from core.models import VBMNet
 
+
 # import pydevd_pycharm
 # pydevd_pycharm.settrace('172.17.0.1', port=8881, stdoutToServer=True, stderrToServer=True, suspend=False)
 
 
 def init_nn(cache, init_weights=False):
-    device = cache.get('device', 'cpu')
-    model = VBMNet(in_size=cache['input_size'],out_size=cache['num_class'])
+    if torch.cuda.is_available() and cache.get('use_gpu'):
+        device = torch.device("cuda:0")
+    else:
+        device = torch.device("cpu")
+
+    model = VBMNet(in_size=cache['input_size'], out_size=cache['num_class'])
     optimizer = torch.optim.Adam(model.parameters(), lr=cache['learning_rate'])
     if init_weights:
         torch.manual_seed(cache['seed'])

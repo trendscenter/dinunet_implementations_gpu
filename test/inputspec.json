@@ -11,6 +11,9 @@
     },
     "mode": {
       "value": "train"
+    },
+    "use_gpu": {
+      "value": true
     }
   },
   {
@@ -25,6 +28,9 @@
     },
     "mode": {
       "value": "train"
+    },
+    "use_gpu": {
+      "value": true
     }
   },
   {
@@ -39,6 +45,9 @@
     },
     "mode": {
       "value": "train"
+    },
+    "num_of_gpu": {
+      "value": 1
     }
   },
   {
@@ -53,6 +62,9 @@
     },
     "mode": {
       "value": "train"
+    },
+    "use_gpu": {
+      "value": true
     }
   }
 ]
