@@ -80,7 +80,7 @@ class VBMNet(nn.Module):
 
         self.cat = MXPConv3d(6 * r, r, kernel_size=3)
 
-        self.drop = nn.Dropout3d(p=0.5)
+        # self.drop = nn.Dropout3d(p=0.5)
         self.flat_size = r * 4 * 6 * 4
         self.fc1 = nn.Linear(self.flat_size, 64)
         self.out = nn.Linear(64, num_class)
@@ -99,7 +99,7 @@ class VBMNet(nn.Module):
 
         x = self.cat(self.crop_concat(x3, x7))
 
-        x = self.drop(x)
+        # x = self.drop(x)
         x = x.view(-1, self.flat_size)
         x = F.relu(self.fc1(x), inplace=True)
         return self.out(x)
