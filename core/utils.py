@@ -6,7 +6,6 @@ from os import sep
 import matplotlib.pyplot as plt
 import pandas as pd
 import torch
-import torch.nn as nn
 
 
 def save_checkpoint(cache, model, optimizer, id):
@@ -91,14 +90,3 @@ def create_k_fold_splits(files, k=0, save_to_dir=None, shuffle_files=True, seed=
         else:
             return splits
 
-
-def initialize_weights(*models):
-    for model in models:
-        for module in model.modules():
-            if isinstance(module, nn.Conv2d) or isinstance(module, nn.Linear):
-                nn.init.kaiming_normal_(module.weight)
-                if module.bias is not None:
-                    module.bias.data.zero_()
-            elif isinstance(module, nn.BatchNorm2d):
-                module.weight.data.fill_(1)
-                module.bias.data.zero_()
