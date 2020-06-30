@@ -10,6 +10,7 @@ import torch
 from classification import NiftiDataset, train, evaluation
 from core import utils
 from core.models import VBMNet
+from core.torchutils import initialize_weights
 
 
 # import pydevd_pycharm
@@ -22,17 +23,17 @@ def init_nn(cache, init_weights=False):
     else:
         device = torch.device("cpu")
 
-    model = VBMNet(in_size=cache['input_size'], out_size=cache['num_class'])
+    model = VBMNet(in_ch=cache['input_ch'], num_class=cache['num_class'])
     optimizer = torch.optim.Adam(model.parameters(), lr=cache['learning_rate'])
     if init_weights:
         torch.manual_seed(cache['seed'])
-        utils.initialize_weights(model)
+        initialize_weights(model)
     return {'device': device, 'model': model.to(device), 'optimizer': optimizer}
 
 
 def init_dataset(cache, state):
     dataset = NiftiDataset(files_dir=state['baseDirectory'] + sep + cache['data_dir'],
-                           labels_file=state['baseDirectory'] + sep + cache['label_dir'],
+                           labels_dir=state['baseDirectory'] + sep + cache['label_dir'],
                            mode=cache['mode'])
     split = json.loads(
         open(state['baseDirectory'] + sep + cache['split_dir'] + sep + cache['split_file']).read())

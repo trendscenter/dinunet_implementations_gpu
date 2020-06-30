@@ -30,7 +30,7 @@ def aggregate_sites_grad(input):
 
 def init_nn_params(cache):
     out = {}
-    out['input_size'] = 1
+    out['input_ch'] = 1
     out['num_class'] = 2
     out['epochs'] = 3
     out['learning_rate'] = 0.001

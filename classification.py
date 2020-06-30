@@ -21,7 +21,7 @@ import torchvision.transforms as tmf
 class NiftiDataset(Dataset):
     def __init__(self, **kw):
         self.files_dir = kw['files_dir']
-        self.labels_dir = kw['labels_file']
+        self.labels_dir = kw['labels_dir']
         self.mode = kw['mode']
         self.indices = []
 
@@ -38,6 +38,7 @@ class NiftiDataset(Dataset):
     def __getitem__(self, ix):
         file, y = self.indices[ix]
         nif = np.array(ni.load(self.files_dir + sep + file).dataobj)[None, :]
+        nif[nif < 0.05] = 0
         return {'inputs': torch.tensor(nif), 'labels': torch.tensor(y)}
 
     def __len__(self):
@@ -47,8 +48,8 @@ class NiftiDataset(Dataset):
         return tmf.Compose([tmf.RandomHorizontalFlip, tmf.RandomVerticalFlip])
 
     def get_loader(self, shuffle=False, batch_size=None, num_workers=0, pin_memory=True, **kw):
-        return NNDataLoader.get_loader(dataset=self, shuffle=shuffle, batch_size=batch_size,
-                                       num_workers=num_workers, pin_memory=pin_memory, **kw)
+        return NNDataLoader.new(dataset=self, shuffle=shuffle, batch_size=batch_size,
+                                num_workers=num_workers, pin_memory=pin_memory, **kw)
 
 
 def get_next_batch(cache, state):
