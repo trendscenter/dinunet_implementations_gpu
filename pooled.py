@@ -60,7 +60,7 @@ for fold in range(10):
 
     print(f'fold {fold}:', len(train_dset), len(val_dset), len(test_dset))
 
-    model = nn.DataParallel(VBMNet(1, 2))
+    model = nn.DataParallel(VBMNet(1, 2, r=8))
     model = model.to(device)
     initialize_weights(model)
     optim = torch.optim.Adam(model.parameters(), lr=LR)

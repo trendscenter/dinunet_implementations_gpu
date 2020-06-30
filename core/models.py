@@ -65,23 +65,23 @@ class InceptionA(nn.Module):
 
 
 class VBMNet(nn.Module):
-    def __init__(self, in_ch, num_class):
+    def __init__(self, in_ch, num_class, r=4):
         super(VBMNet, self).__init__()
-        self.c1 = MXPConv3d(in_ch, 4, kernel_size=3)
+        self.c1 = MXPConv3d(in_ch, r, kernel_size=3)
 
-        self.c2 = MXPConv3d(4, 8, kernel_size=3)
-        self.c3 = MXPConv3d(8, 16, kernel_size=3)
+        self.c2 = MXPConv3d(r, 2 * r, kernel_size=3)
+        self.c3 = MXPConv3d(2 * r, 4 * r, kernel_size=3)
 
-        self.c4 = UpConv3d(16, 8, kernel_size=2, stride=2)
-        self.c5 = UpConv3d(8, 4, kernel_size=2, stride=2)
+        self.c4 = UpConv3d(4 * r, 2 * r, kernel_size=2, stride=2)
+        self.c5 = UpConv3d(2 * r, r, kernel_size=2, stride=2)
 
-        self.c6 = MXPConv3d(8, 16, kernel_size=3)
-        self.c7 = MXPConv3d(16, 8, kernel_size=3)
+        self.c6 = MXPConv3d(2 * r, 4 * r, kernel_size=3)
+        self.c7 = MXPConv3d(4 * r, 2 * r, kernel_size=3)
 
-        self.cat = MXPConv3d(24, 4, kernel_size=3)
+        self.cat = MXPConv3d(6 * r, r, kernel_size=3)
 
         self.drop = nn.Dropout3d(p=0.5)
-        self.flat_size = 4 * 4 * 6 * 4
+        self.flat_size = r * 4 * 6 * 4
         self.fc1 = nn.Linear(self.flat_size, 64)
         self.out = nn.Linear(64, num_class)
 
@@ -113,13 +113,14 @@ class VBMNet(nn.Module):
             diffa[4]:large.shape[2] - diffb[4]]
         return torch.cat([t, small], 1)
 
+#
+# device = torch.device('cuda:0')
+m = VBMNet(1, 2, r=8)
+# m = m.to(device)
+#
+# i = torch.randn((8, 1, 121, 145, 121))
+# o = m(i.to(device))
+# print(i.shape)
 
-device = torch.device('cuda:0')
-m = VBMNet(1, 2)
-m = m.to(device)
 torch_total_params = sum(p.numel() for p in m.parameters() if p.requires_grad)
 print('Total Params:', torch_total_params)
-
-i = torch.randn((8, 1, 121, 145, 121))
-o = m(i.to(device))
-print(i.shape)
