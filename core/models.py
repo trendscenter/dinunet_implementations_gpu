@@ -115,12 +115,12 @@ class VBMNet(nn.Module):
 
 #
 # device = torch.device('cuda:0')
-m = VBMNet(1, 2, r=8)
+# m = VBMNet(1, 2, r=8)
 # m = m.to(device)
 #
 # i = torch.randn((8, 1, 121, 145, 121))
 # o = m(i.to(device))
 # print(i.shape)
 
-torch_total_params = sum(p.numel() for p in m.parameters() if p.requires_grad)
-print('Total Params:', torch_total_params)
+# torch_total_params = sum(p.numel() for p in m.parameters() if p.requires_grad)
+# print('Total Params:', torch_total_params)
