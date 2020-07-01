@@ -9,6 +9,7 @@ import os
 import json
 from core.measurements import Prf1a
 import torch.nn as nn
+import math
 
 
 def get_dataset(conf, fold, split_key=None):
@@ -33,70 +34,78 @@ def eval(data_loader, model, device):
     return score
 
 
+def train(fold, model, optim, device, epochs, train_loader, val_loader):
+    best_score = 0.0
+    for ep in range(epochs):
+        for i, batch in enumerate(train_loader):
+            inputs, labels = batch['inputs'].to(device).float(), batch['labels'].to(device).long()
+
+            optim.zero_grad()
+            out = F.log_softmax(model(inputs), 1)
+            loss = F.nll_loss(out, labels)
+            loss.backward()
+            optim.step()
+
+            _, preds = torch.max(out, 1)
+            score = Prf1a()
+            score.add(preds, labels)
+            if i % int(math.log(i + 1) + 1) == 0:
+                print(f'Ep:{ep}/{epochs}, Itr:{i}/{len(train_loader)}, {round(loss.item(), 4)}, {score.prfa()}')
+        val_score = eval(val_loader, model, device)
+        if val_score.f1 > best_score:
+            best_score = val_score.f1
+            torch.save(model.state_dict(), f'pooled_log/best_{fold}.pt')
+            print(f'##### *** BEST saved ***  {best_score}')
+        else:
+            print('###### Not Improved:', val_score.f1, best_score)
+
+
 if __name__ == "__main__":
+    mode = 'train'
     torch.backends.cudnn.enabled = False
     R = 8
     LR = 0.001
     BZ = 16
     device = torch.device('cuda')
-    epochs = 111
+    epochs = 51
     os.makedirs('pooled_log', exist_ok=True)
     global_score = Prf1a(0)
     for fold in range(10):
 
-        train, val, test = [], [], []
+        train_set, val_set, test_set = [], [], []
         for s, conf in enumerate(json.loads(open('test/inputspec.json').read())):
-            train.append(get_dataset(conf, fold, 'train'))
-            val.append(get_dataset(conf, fold, 'validation'))
-            test.append(get_dataset(conf, fold, 'test'))
-
-        train_dset = ConcatDataset(train)
-        train_loader = NNDataLoader.new(dataset=train_dset, batch_size=BZ,
-                                        pin_memory=True, shuffle=True, drop_last=True)
-
-        val_dset = ConcatDataset(val)
-        val_loader = NNDataLoader.new(dataset=val_dset, batch_size=BZ, pin_memory=True, shuffle=True)
-
-        test_dset = ConcatDataset(test)
-        test_loader = NNDataLoader.new(dataset=test_dset, batch_size=BZ, pin_memory=True, shuffle=True)
-
-        print(f'fold {fold}:', len(train_dset), len(val_dset), len(test_dset))
+            train_set.append(get_dataset(conf, fold, 'train'))
+            val_set.append(get_dataset(conf, fold, 'validation'))
+            test_set.append(get_dataset(conf, fold, 'test'))
 
         model = nn.DataParallel(VBMNet(1, 2, r=R))
         model = model.to(device)
         initialize_weights(model)
         optim = torch.optim.Adam(model.parameters(), lr=LR)
-        best_score = 0.0
-        for ep in range(epochs):
-            for i, batch in enumerate(train_loader):
-                inputs, labels = batch['inputs'].to(device).float(), batch['labels'].to(device).long()
 
-                optim.zero_grad()
-                out = F.log_softmax(model(inputs), 1)
-                loss = F.nll_loss(out, labels)
-                loss.backward()
-                optim.step()
+        run_test = mode == 'test'
+        if mode == 'train':
+            train_dset = ConcatDataset(train_set)
+            train_loader = NNDataLoader.new(dataset=train_dset, batch_size=BZ,
+                                            pin_memory=True, shuffle=True, drop_last=True)
+            val_dset = ConcatDataset(val_set)
+            val_loader = NNDataLoader.new(dataset=val_dset, batch_size=BZ, pin_memory=True, shuffle=True)
+            print(f'Fold {fold}:', len(train_dset), len(val_dset))
+            train(fold, model, optim, device, epochs, train_loader, val_loader)
+            run_test = True
 
-                _, preds = torch.max(out, 1)
-                score = Prf1a()
-                score.add(preds, labels)
-                if i in list(range(11)) or i % 5 == 0:
-                    print(f'Ep:{ep}/{epochs}, Itr:{i}/{len(train_loader)}, {round(loss.item(), 4)}, {score.prfa()}')
-            val_score = eval(val_loader, model, device)
-            if val_score.f1 > best_score:
-                best_score = val_score.f1
-                torch.save(model.state_dict(), f'pooled_log/best_{fold}.pt')
-                print(f'##### *** BEST saved ***  {best_score}')
-            else:
-                print('###### Not Improved:', val_score.f1, best_score)
+        if run_test:
+            test_dset = ConcatDataset(test_set)
+            test_loader = NNDataLoader.new(dataset=test_dset, batch_size=BZ, pin_memory=True, shuffle=True)
+            model.load_state_dict(torch.load(f'pooled_log/best_{fold}.pt'))
 
-        model.load_state_dict(torch.load(f'pooled_log/best_{fold}.pt'))
-        test_score = eval(test_loader, model, device)
-        global_score.accumulate(test_score)
-        with open(f'pooled_log/{fold}_prfa.txt', 'w') as wr:
-            wr.write(test_score.prfa())
-            wr.flush()
+            print(f'Fold {fold}:', len(test_dset))
+            test_score = eval(test_loader, model, device)
+            global_score.accumulate(test_score)
+            with open(f'pooled_log/{fold}_prfa.txt', 'w') as wr:
+                wr.write(f'{test_score.prfa()}')
+                wr.flush()
 
     with open(f'pooled_log/global_prfa.txt', 'w') as wr:
-        wr.write(global_score.prfa())
+        wr.write(f'{global_score.prfa()}')
         wr.flush()
