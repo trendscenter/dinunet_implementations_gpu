@@ -78,10 +78,10 @@ class VBMNet(nn.Module):
         self.c6 = MXPConv3d(2 * r, 4 * r, kernel_size=3)
         self.c7 = MXPConv3d(4 * r, 2 * r, kernel_size=3)
 
-        self.cat = MXPConv3d(6 * r, r, kernel_size=3)
+        self.cat = MXPConv3d(6 * r, 4, kernel_size=3)
 
         # self.drop = nn.Dropout3d(p=0.5)
-        self.flat_size = r * 4 * 6 * 4
+        self.flat_size = 4 * 4 * 6 * 4
         self.fc1 = nn.Linear(self.flat_size, 64)
         self.out = nn.Linear(64, num_class)
 
@@ -115,7 +115,7 @@ class VBMNet(nn.Module):
 
 #
 # device = torch.device('cuda:0')
-# m = VBMNet(1, 2, r=8)
+# m = VBMNet(1, 2, r=16)
 # m = m.to(device)
 #
 # i = torch.randn((8, 1, 121, 145, 121))
