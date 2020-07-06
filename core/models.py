@@ -59,7 +59,7 @@ class VBMNet(nn.Module):
 
         self.c11 = MXPConv3d(24 * r, r, kernel_size=1)
 
-        self.flat_size = 4 * 3 * 5 * 3
+        self.flat_size = r * 3 * 5 * 3
         self.fc1 = nn.Linear(self.flat_size, 64)
         self.out = nn.Linear(64, num_class)
 

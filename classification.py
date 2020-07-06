@@ -16,6 +16,7 @@ from core.measurements import new_metrics, Avg
 import numpy as np
 import nibabel as ni
 import torchvision.transforms as tmf
+import random
 
 
 class NiftiDataset(Dataset):
@@ -37,9 +38,11 @@ class NiftiDataset(Dataset):
 
     def __getitem__(self, ix):
         file, y = self.indices[ix]
-        nif = np.array(ni.load(self.files_dir + sep + file).dataobj)[None, :]
+        nif = np.array(ni.load(self.files_dir + sep + file).dataobj)
         nif[nif < 0.05] = 0
-        return {'inputs': torch.tensor(nif), 'labels': torch.tensor(y)}
+        if random.uniform(0, 1) < 0.8:
+            nif = np.flip(nif, random.choice([None, 0, 1, 2]))
+        return {'inputs': torch.tensor(nif.copy()[None, :]), 'labels': torch.tensor(y)}
 
     def __len__(self):
         return len(self.indices)

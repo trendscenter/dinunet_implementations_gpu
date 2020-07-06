@@ -62,13 +62,13 @@ def train(fold, model, optim, device, epochs, train_loader, val_loader):
 
 if __name__ == "__main__":
     mode = 'train'
-    R = 4
+    R = 8
     LR = 0.001
     BZ = 16
     device = torch.device('cuda')
-    epochs = 51
+    epochs = 111
     os.makedirs('pooled_log', exist_ok=True)
-    global_score = Prf1a(0)
+    global_score = Prf1a()
     for fold in range(10):
 
         train_set, val_set, test_set = [], [], []
@@ -88,14 +88,14 @@ if __name__ == "__main__":
             train_loader = NNDataLoader.new(dataset=train_dset, batch_size=BZ,
                                             pin_memory=True, shuffle=True, drop_last=True)
             val_dset = ConcatDataset(val_set)
-            val_loader = NNDataLoader.new(dataset=val_dset, batch_size=BZ, pin_memory=True, shuffle=True)
+            val_loader = NNDataLoader.new(dataset=val_dset, batch_size=BZ, pin_memory=True)
             print(f'Fold {fold}:', len(train_dset), len(val_dset))
             train(fold, model, optim, device, epochs, train_loader, val_loader)
             run_test = True
 
         if run_test:
             test_dset = ConcatDataset(test_set)
-            test_loader = NNDataLoader.new(dataset=test_dset, batch_size=BZ, pin_memory=True, shuffle=True)
+            test_loader = NNDataLoader.new(dataset=test_dset, batch_size=BZ, pin_memory=True)
             model.load_state_dict(torch.load(f'pooled_log/best_{fold}.pt'))
 
             print(f'Fold {fold}:', len(test_dset))
