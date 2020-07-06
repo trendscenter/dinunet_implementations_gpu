@@ -62,11 +62,11 @@ def train(fold, model, optim, device, epochs, train_loader, val_loader):
 
 if __name__ == "__main__":
     mode = 'train'
-    R = 16
+    R = 4
     LR = 0.001
     BZ = 16
     device = torch.device('cuda')
-    epochs = 71
+    epochs = 51
     os.makedirs('pooled_log', exist_ok=True)
     global_score = Prf1a(0)
     for fold in range(10):
