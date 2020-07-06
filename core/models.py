@@ -9,7 +9,7 @@ class BasicConv3d(nn.Module):
     def __init__(self, in_channels, out_channels, **kw):
         super(BasicConv3d, self).__init__()
         self.conv = nn.Conv3d(in_channels, out_channels, bias=False, **kw)
-        self.bn = nn.BatchNorm3d(out_channels)
+        self.bn = nn.BatchNorm3d(out_channels, eps=0.001)
 
     def forward(self, x):
         x = self.conv(x)
@@ -18,66 +18,66 @@ class BasicConv3d(nn.Module):
 
 
 class MXPConv3d(nn.Module):
-    def __init__(self, in_channels, out_channels, mxp_k=2, mxp_s=2):
+    def __init__(self, in_channels, out_channels, **kw):
         super(MXPConv3d, self).__init__()
+        self.down = nn.MaxPool3d(**kw)
         self.conv = BasicConv3d(in_channels, out_channels, kernel_size=3, padding=1)
-        self.mx_k = mxp_k
-        self.mxp_s = mxp_s
 
     def forward(self, x):
-        x = F.max_pool3d(x, kernel_size=self.mx_k, stride=self.mxp_s)
-        return self.conv(x)
+        x = self.down(x)
+        x = self.conv(x)
+        return x
 
 
 class UpConv3d(nn.Module):
-    def __init__(self, in_channels, out_channels, up_k=2, up_s=2):
+    def __init__(self, in_channels, out_channels, **kw):
         super(UpConv3d, self).__init__()
-        self.up = nn.ConvTranspose3d(in_channels, out_channels, kernel_size=up_k, stride=up_s)
+        self.up = nn.ConvTranspose3d(in_channels, out_channels, **kw)
         self.conv = BasicConv3d(out_channels, out_channels, kernel_size=3, padding=1)
 
     def forward(self, x):
         x = self.up(x)
-        return self.conv(x)
+        x = self.conv(x)
+        return x
 
 
 class VBMNet(nn.Module):
-    def __init__(self, in_ch, num_class, r=2):
+    def __init__(self, in_ch, num_class, r=4):
         super(VBMNet, self).__init__()
-        self.c1 = BasicConv3d(in_ch, 2 * r, kernel_size=3)
+        self.c0 = BasicConv3d(in_ch, r, kernel_size=3, padding=0)
+        self.c1 = MXPConv3d(r, r, kernel_size=2, stride=2)
 
-        self.c2 = MXPConv3d(2 * r, 2 * r)
-        self.c3 = MXPConv3d(2 * r, 4 * r)
-        self.c4 = MXPConv3d(4 * r, 8 * r)
+        self.c2 = MXPConv3d(r, 2 * r, kernel_size=2, stride=2)
+        self.c3 = MXPConv3d(2 * r, 4 * r, kernel_size=2, stride=2)
 
-        self.c5 = UpConv3d(8 * r, 4 * r)
-        self.c6 = UpConv3d(4 * r, 2 * r)
-        self.c7 = UpConv3d(2 * r, r)
+        self.c4 = UpConv3d(4 * r, 2 * r, kernel_size=2, stride=2)
+        self.c5 = UpConv3d(2 * r, r, kernel_size=2, stride=2)
 
-        self.c8 = MXPConv3d(3 * r, 4 * r)
-        self.c9 = MXPConv3d(4 * r, 8 * r)
-        self.c10 = MXPConv3d(8 * r, 16 * r)
+        self.c6 = MXPConv3d(2 * r, 4 * r, kernel_size=2, stride=2)
+        self.c7 = MXPConv3d(4 * r, 2 * r, kernel_size=2, stride=2)
 
-        self.c11 = MXPConv3d(24 * r, r)
+        self.c8 = MXPConv3d(6 * r, 4 * r, kernel_size=2, stride=2)
+        self.c9 = MXPConv3d(4 * r, 2 * r, kernel_size=2, stride=2)
 
-        self.flat_size = r * 3 * 5 * 3
+        self.flat_size = 2 * r * 3 * 4 * 3
         self.fc1 = nn.Linear(self.flat_size, 64)
         self.out = nn.Linear(64, num_class)
 
     def forward(self, x):
+        x = self.c0(x)
         x1 = self.c1(x)
-        x = self.c2(x1)
-        x = self.c3(x)
-        x4 = self.c4(x)
 
-        x = self.c5(x4)
-        x = self.c6(x)
+        x = self.c2(x1)
+        x3 = self.c3(x)
+
+        x = self.c4(x3)
+        x5 = self.c5(x)
+
+        x = self.c6(self.crop_concat(x1, x5))
         x7 = self.c7(x)
 
-        x = self.c8(self.crop_concat(x1, x7))
+        x = self.c8(self.crop_concat(x3, x7))
         x = self.c9(x)
-        x10 = self.c10(x)
-
-        x = self.c11(self.crop_concat(x4, x10))
 
         x = x.view(-1, self.flat_size)
         x = F.relu(self.fc1(x), inplace=True)
@@ -94,14 +94,13 @@ class VBMNet(nn.Module):
 
 
 #
+# device = torch.device('cuda:0')
+m = VBMNet(1, 2, r=8)
+# m = m.to(device)
 #
-device = torch.device('cuda:0')
-m = VBMNet(1, 2, r=4)
-m = m.to(device)
+# i = torch.randn((8, 1, 121, 145, 121))
+# o = m(i.to(device))
+# print(i.shape)
 
-i = torch.randn((8, 1, 121, 145, 121))
-o = m(i.to(device))
-print(i.shape, o.shape)
-#
-# torch_total_params = sum(p.numel() for p in m.parameters() if p.requires_grad)
-# print('Total Params:', torch_total_params)
+torch_total_params = sum(p.numel() for p in m.parameters() if p.requires_grad)
+print('Total Params:', torch_total_params)
