@@ -1,1 +1,1 @@
-![DINUNET](assets/dinunet_flow.png)
+![DINUNET](assets/dinunet.png)
