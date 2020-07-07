@@ -61,12 +61,13 @@ def train(fold, model, optim, device, epochs, train_loader, val_loader):
 
 
 if __name__ == "__main__":
+    torch.backends.cudnn.enabled = False
     mode = 'train'
-    R = 8
+    R = 16
     LR = 0.001
     BZ = 16
     device = torch.device('cuda')
-    epochs = 111
+    epochs = 251
     os.makedirs('pooled_log', exist_ok=True)
     global_score = Prf1a()
     for fold in range(10):
@@ -77,9 +78,11 @@ if __name__ == "__main__":
             val_set.append(get_dataset(conf, fold, 'validation'))
             test_set.append(get_dataset(conf, fold, 'test'))
 
-        model = nn.DataParallel(VBMNet(1, 2, r=R))
+        model = VBMNet(1, 2, r=R)
+        model = nn.DataParallel(model)
         model = model.to(device)
         initialize_weights(model)
+
         optim = torch.optim.Adam(model.parameters(), lr=LR)
 
         run_test = mode == 'test'

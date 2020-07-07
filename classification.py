@@ -17,6 +17,7 @@ import numpy as np
 import nibabel as ni
 import torchvision.transforms as tmf
 import random
+import itertools
 
 
 class NiftiDataset(Dataset):
@@ -25,6 +26,10 @@ class NiftiDataset(Dataset):
         self.labels_dir = kw['labels_dir']
         self.mode = kw['mode']
         self.indices = []
+        self.axises = []
+        axises = [0, 1, 2]
+        for i in range(len(axises)):
+            self.axises += list(itertools.combinations(axises, i + 1))
 
     def load_indices(self, files, **kw):
         labels_file = os.listdir(self.labels_dir)[0]
@@ -40,15 +45,15 @@ class NiftiDataset(Dataset):
         file, y = self.indices[ix]
         nif = np.array(ni.load(self.files_dir + sep + file).dataobj)
         nif[nif < 0.05] = 0
-        if random.uniform(0, 1) < 0.8:
-            nif = np.flip(nif, random.choice([None, 0, 1, 2]))
+        if random.uniform(0, 1) > 0.15:
+            nif = np.flip(nif, random.choice(self.axises))
         return {'inputs': torch.tensor(nif.copy()[None, :]), 'labels': torch.tensor(y)}
 
     def __len__(self):
         return len(self.indices)
 
     def get_transformations(self):
-        return tmf.Compose([tmf.RandomHorizontalFlip, tmf.RandomVerticalFlip])
+        pass
 
     def get_loader(self, shuffle=False, batch_size=None, num_workers=0, pin_memory=True, **kw):
         return NNDataLoader.new(dataset=self, shuffle=shuffle, batch_size=batch_size,
