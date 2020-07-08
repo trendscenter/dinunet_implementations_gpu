@@ -1,4 +1,4 @@
-![DINUNET_vbm](assets/dinunet_vbm.png)
+![DINUNET](assets/dinunet.png)
 
 ### Structure
 * [dinunet_vbm/assets](https://github.com/trendscenter/dinunet_vbm/tree/master/assets)
