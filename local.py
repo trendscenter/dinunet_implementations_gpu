@@ -7,10 +7,9 @@ from os import sep
 
 import torch
 
+import core.torchutils as tu
 from classification import NiftiDataset, train, evaluation
-from core import utils
 from core.models import VBMNet
-from core.torchutils import initialize_weights
 
 
 # import pydevd_pycharm
@@ -27,7 +26,7 @@ def init_nn(cache, init_weights=False):
     optimizer = torch.optim.Adam(model.parameters(), lr=cache['learning_rate'])
     if init_weights:
         torch.manual_seed(cache['seed'])
-        initialize_weights(model)
+        tu.initialize_weights(model)
     return {'device': device, 'model': model.to(device), 'optimizer': optimizer}
 
 
@@ -98,7 +97,7 @@ if __name__ == "__main__":
         cache['current_nn_state'] = 'current.nn.pt'
         cache['best_nn_state'] = 'best.nn.pt'
         nn = init_nn(cache, init_weights=True)
-        utils.save_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['current_nn_state'])
+        tu.save_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['current_nn_state'])
         init_dataset(cache, state)
         nxt_phase = 'computation'
 
@@ -107,23 +106,23 @@ if __name__ == "__main__":
         out['mode'] = input['global_modes'].get(state['clientId'], cache['mode'])
 
         if input.get('save_current_as_best'):
-            utils.load_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['current_nn_state'])
-            utils.save_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['best_nn_state'])
+            tu.load_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['current_nn_state'])
+            tu.save_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['best_nn_state'])
 
         if out['mode'] in ['train', 'val_waiting']:
-            utils.load_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['current_nn_state'])
+            tu.load_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['current_nn_state'])
             out.update(**train(cache, input, state, nn['model'], nn['optimizer'], device=nn['device']))
-            utils.save_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['current_nn_state'])
+            tu.save_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['current_nn_state'])
             out.update(**next_iter(cache))
 
         elif out['mode'] == 'validation':
-            utils.load_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['current_nn_state'])
+            tu.load_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['current_nn_state'])
             avg, scores = evaluation(cache, state, nn['model'], split_key='validation', device=nn['device'])
             out['validation_log'] = [vars(avg), vars(scores)]
             out.update(**next_epoch(cache))
 
         elif out['mode'] == 'test':
-            utils.load_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['best_nn_state'])
+            tu.load_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['best_nn_state'])
             avg, scores = evaluation(cache, state, nn['model'], split_key='validation', device=nn['device'])
             out['test_log'] = [vars(avg), vars(scores)]
             out['mode'] = cache['_mode_']

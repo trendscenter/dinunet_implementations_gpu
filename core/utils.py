@@ -8,17 +8,6 @@ import pandas as pd
 import torch
 
 
-def save_checkpoint(cache, model, optimizer, id):
-    chk = {'model_state_dict': model.state_dict(), 'optimizer_state_dict': optimizer.state_dict()}
-    torch.save(chk, cache['log_dir'] + sep + id)
-
-
-def load_checkpoint(cache, model, optimizer, id):
-    checkpoint = torch.load(cache['log_dir'] + sep + id)
-    model.load_state_dict(checkpoint['model_state_dict'])
-    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-
-
 def save_logs(cache, plot_keys=[], file_keys=[], num_points=51, log_dir=None):
     plt.switch_backend('agg')
     plt.rcParams["figure.figsize"] = [16, 9]
