@@ -1,11 +1,77 @@
-#!/usr/bin/env python3
 import json
 import os
 from os import sep
 
-import matplotlib.pyplot as plt
 import pandas as pd
 import torch
+import torch.nn as nn
+from matplotlib import pyplot as plt
+
+from classification import NiftiDataset
+from core.models import VBMNet
+
+
+def initialize_weights(*models):
+    for model in models:
+        for module in model.modules():
+            if isinstance(module, nn.Conv2d) or isinstance(module, nn.Linear):
+                nn.init.kaiming_normal_(module.weight)
+                if module.bias is not None:
+                    module.bias.data.zero_()
+            elif isinstance(module, nn.BatchNorm2d):
+                module.weight.data.fill_(1)
+                module.bias.data.zero_()
+
+
+def save_checkpoint(cache, model, optimizer, id):
+    chk = {'model_state_dict': model.state_dict(), 'optimizer_state_dict': optimizer.state_dict()}
+    torch.save(chk, cache['log_dir'] + sep + id)
+
+
+def load_checkpoint(cache, model, optimizer, id):
+    checkpoint = torch.load(cache['log_dir'] + sep + id)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+
+
+def init_nn(cache, init_weights=False):
+    """
+    Initialize neural network/optimizer with locked parameters(check on remote script for that).
+    Also detect and assign specified GPUs.
+    @note Works only with one GPU per site at the moment.
+    """
+    if torch.cuda.is_available() and cache.get('use_gpu'):
+        device = torch.device("cuda:0")
+    else:
+        device = torch.device("cpu")
+    model = VBMNet(in_ch=cache['input_ch'], num_class=cache['num_class'])
+    optimizer = torch.optim.Adam(model.parameters(), lr=cache['learning_rate'])
+    if init_weights:
+        torch.manual_seed(cache['seed'])
+        initialize_weights(model)
+    return {'device': device, 'model': model.to(device), 'optimizer': optimizer}
+
+
+def init_dataset(cache, state):
+    """
+    Parse and load dataset and save to cache:
+    so that in next global iteration we dont have to do that again.
+    The data IO depends on use case-For a instance, if your data can fit in RAM, you can load
+     and save the entire dataset in cache. But in general,
+     it is better to save indices in cache and load only the mini-batch at a time
+     (logic in __nextitem__) of the data loader.
+    """
+    dataset = NiftiDataset(files_dir=state['baseDirectory'] + sep + cache['data_dir'],
+                           labels_file=state['baseDirectory'] + sep + cache['label_dir'],
+                           mode=cache['mode'])
+    split = json.loads(
+        open(state['baseDirectory'] + sep + cache['split_dir'] + sep + cache['split_file']).read())
+    dataset.load_indices(files=split['train'])
+    cache['data_indices'] = dataset.indices
+    if len(dataset) % cache['batch_size'] >= 4:
+        cache['data_len'] = len(dataset)
+    else:
+        cache['data_len'] = (len(dataset) // cache['batch_size']) * cache['batch_size']
 
 
 def save_logs(cache, plot_keys=[], file_keys=[], num_points=51, log_dir=None):
@@ -44,38 +110,3 @@ def save_logs(cache, plot_keys=[], file_keys=[], num_points=51, log_dir=None):
                     file.write(','.join([str(s) for s in line]) + '\n')
                 else:
                     file.write(f'{line}\n')
-
-
-def fmt(*args):
-    return ','.join(str(s) for s in args)
-
-
-def create_k_fold_splits(files, k=0, save_to_dir=None, shuffle_files=True, seed=None):
-    from random import shuffle
-    from itertools import chain
-    import numpy as np
-
-    if seed:
-        np.random.seed(seed)
-
-    if shuffle_files:
-        shuffle(files)
-
-    ix_splits = np.array_split(np.arange(len(files)), k)
-    for i in range(len(ix_splits)):
-        test_ix = ix_splits[i].tolist()
-        val_ix = ix_splits[(i + 1) % len(ix_splits)].tolist()
-        train_ix = [ix for ix in np.arange(len(files)) if ix not in test_ix + val_ix]
-
-        splits = {'train': [files[ix] for ix in train_ix],
-                  'validation': [files[ix] for ix in val_ix],
-                  'test': [files[ix] for ix in test_ix]}
-
-        print('Valid:', set(files) - set(list(chain(*splits.values()))) == set([]))
-        if save_to_dir:
-            f = open(save_to_dir + os.sep + 'SPLIT_' + str(i) + '.json', "w")
-            f.write(json.dumps(splits))
-            f.close()
-        else:
-            return splits
-

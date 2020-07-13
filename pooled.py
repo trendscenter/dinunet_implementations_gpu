@@ -1,6 +1,7 @@
 from core.models import VBMNet
 from classification import NiftiDataset, iteration, evaluation
-from core.torchutils import NNDataLoader, initialize_weights
+from core.datautils import NNDataLoader
+from core.utils import initialize_weights
 from torch.utils.data import ConcatDataset
 from core.models import VBMNet
 import torch
