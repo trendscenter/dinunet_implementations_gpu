@@ -71,7 +71,6 @@
     "batch_size": {
       "value": 16
     },
-    ,
     "learning_rate": {
       "value": 0.001
     }
