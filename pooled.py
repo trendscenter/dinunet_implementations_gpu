@@ -1,22 +1,30 @@
-from core.models import VBMNet
-from classification import NiftiDataset, iteration, evaluation
-from core.datautils import NNDataLoader
-from core.utils import initialize_weights
-from torch.utils.data import ConcatDataset
-from core.models import VBMNet
-import torch
-import torch.nn.functional as F
-import os
 import json
-from core.measurements import Prf1a
-import torch.nn as nn
 import math
+import os
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from local import NiftiDataset
+from torch.utils.data import ConcatDataset
+
+from core.measurements import Prf1a
+from core.utils import initialize_weights, NNDataLoader
+from models import VBMNet
+
+
+class PooledDataset(NiftiDataset):
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.data_dir = kw['data_dir']
+        self.label_dir = kw['label_dir']
+        self.mode = kw['mode']
 
 
 def get_dataset(conf, fold, split_key=None):
-    dataset = NiftiDataset(files_dir=f"test/input/local{s}/simulatorRun/{conf['data_dir']['value']}",
-                           labels_dir=f"test/input/local{s}/simulatorRun/{conf['label_dir']['value']}",
-                           mode='pooled')
+    dataset = PooledDataset(files_dir=f"test/input/local{s}/simulatorRun/{conf['data_dir']['value']}",
+                            labels_dir=f"test/input/local{s}/simulatorRun/{conf['label_dir']['value']}",
+                            mode='pooled')
     split_file = f"test/input/local{s}/simulatorRun/{conf['split_dir']['value']}/SPLIT_{fold}.json"
     split = json.loads(open(split_file).read())
     dataset.load_indices(split[split_key])

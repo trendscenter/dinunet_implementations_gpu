@@ -1,13 +1,14 @@
 #!/usr/bin/python
+import datetime
 import json
 import os
-import random
+import shutil
 import sys
-from os import sep
+from itertools import repeat
 
-from classification import train, evaluation
-from core import utils as ut
-from core.datautils import init_k_folds
+import numpy as np
+
+from core.measurements import Prf1a, Avg
 
 
 # import pydevd_pycharm
@@ -15,39 +16,155 @@ from core.datautils import init_k_folds
 # pydevd_pycharm.settrace('172.17.0.1', port=8881, stdoutToServer=True, stderrToServer=True, suspend=False)
 
 
-def next_iter(cache):
+def aggregate_sites_info(input):
+    """
+    Average each sites gradients and pass it to all sites.
+    """
     out = {}
-    cache['cursor'] += cache['batch_size']
-    if cache['cursor'] >= cache['data_len']:
-        out['mode'] = 'val_waiting'
-        cache['cursor'] = 0
-        random.shuffle(cache['data_indices'])
-
+    grads = []
+    for site, site_vars in input.items():
+        grad_file = state['baseDirectory'] + os.sep + site + os.sep + site_vars['grads_file']
+        grad = np.load(grad_file, allow_pickle=True)
+        grads.append(grad)
+    out['avg_grads_file'] = 'avg_grads.npy'
+    avg_grads = []
+    for layer_grad in zip(*grads):
+        avg_grads.append(np.array(layer_grad).mean(0))
+    np.save(state['transferDirectory'] + os.sep + out['avg_grads_file'], np.array(avg_grads))
     return out
 
 
-def next_epoch(cache):
+def init_runs(cache, input):
+    folds = []
+    for site, site_vars in input.items():
+        folds.append(list(zip(repeat(site), site_vars['splits'].items())))
+    cache['folds'] = list(zip(*folds))
+    cache.update(batch_size=[v['batch_size'] for _, v in input.items()][0])
+    cache.update(id=[v['id'] for _, v in input.items()][0])
+
+
+def next_run(cache, state):
     """
-    Transition to next epoch after validation.
-    It will set 'train_waiting' status if we need more training
-    Else it will set 'test' status
+    This function pops a new fold, lock parameters, and forward init_nn signal to all sites
+    """
+    cache['fold'] = dict(cache['folds'].pop())
+    seed = 244627
+    log_dir = '_'.join([str(s) for s in set(f for _, (f, _) in cache['fold'].items())])
+    cache.update(log_dir=state['outputDirectory'] + os.sep + cache['id'] + os.sep + log_dir)
+    os.makedirs(cache['log_dir'], exist_ok=True)
+
+    cache.update(best_val_score=0)
+    cache.update(train_log=['Loss,Precision,Recall,F1,Accuracy'],
+                 validation_log=['Loss,Precision,Recall,F1,Accuracy'],
+                 test_log=['Loss,Precision,Recall,F1,Accuracy'])
+    """
+    **** Parameter Lock ******
+    Batch sizes are distributed based on number of data items on each site.
+    We lock batch size because small dataset sometimes leads to batch size of 1, 2 on a particular site. 
+    It causes issue in batch norm computation. 
+    So we make sure that all the parameters we pass on to sites do not compromise the training process.
+    """
+    train_lens = dict([(site, ln[1]) for site, ln in cache['fold'].items()])
+    itr = sum(train_lens.values()) / cache['batch_size']
+    batch_sizes = {}
+    for site, bz in train_lens.items():
+        batch_sizes[site] = int(max(bz // itr, 1) + 1)
+    while sum(batch_sizes.values()) != cache['batch_size']:
+        largest = max(batch_sizes, key=lambda k: batch_sizes[k])
+        batch_sizes[largest] -= 1
+    out = {}
+    for site, (split_file, data_len) in cache['fold'].items():
+        out[site] = {'split_ix': split_file, 'data_len': data_len,
+                     'batch_size': batch_sizes[site], 'seed': seed}
+    return out
+
+
+def check(logic, k, v, input):
+    phases = []
+    for site_vars in input.values():
+        phases.append(site_vars.get(k) == v)
+    return logic(phases)
+
+
+def on_epoch_end(cache, input):
+    """
+    #############################
+    Entry status: "train_waiting"
+    Exit status: "train"
+    ############################
+
+    This function runs once an epoch of training is done and all sites
+        run the validation step i.e. all sites in "train_waiting" status.
+    We accumulate training/validation loss and scores of the last epoch.
+    We also send a save current model as best signal to all sites if the global validation score is better than the previously saved one.
     """
     out = {}
-    cache['epoch'] += 1
-    if cache['epoch'] >= cache['epochs']:
-        out['mode'] = 'test'
-    else:
-        cache['cursor'] = 0
-        out['mode'] = 'train_waiting'
-        random.shuffle(cache['data_indices'])
+    train_prfa = Prf1a()
+    train_loss = Avg()
+    val_prfa = Prf1a()
+    val_loss = Avg()
+    for site, site_vars in input.items():
+        for tl, tp in site_vars['train_log']:
+            train_loss.add(tl['sum'], tl['count'])
+            train_prfa.update(tp=tp['tp'], tn=tp['tn'], fn=tp['fn'], fp=tp['fp'])
+        vl, vp = site_vars['validation_log']
+        val_loss.add(vl['sum'], vl['count'])
+        val_prfa.update(tp=vp['tp'], tn=vp['tn'], fn=vp['fn'], fp=vp['fp'])
 
-    out['train_log'] = cache['train_log']
-    cache['train_log'] = []
+    cache['train_log'].append([train_loss.average, *train_prfa.prfa()])
+    cache['validation_log'].append([val_loss.average, *val_prfa.prfa()])
+
+    if val_prfa.f1 >= cache['best_val_score']:
+        cache['best_val_score'] = val_prfa.f1
+        out['save_current_as_best'] = True
+    else:
+        out['save_current_as_best'] = False
+    return out
+
+
+def save_test_scores(cache, input):
+    """
+    ########################
+    Entry: phase "next_run_waiting"
+    Exit: continue on next fold if folds left, else success and stop
+    #######################
+    This function saves test score of last fold.
+    """
+    test_prfa = Prf1a()
+    test_loss = Avg()
+    for site, site_vars in input.items():
+        vl, vp = site_vars['test_log']
+        test_loss.add(vl['sum'], vl['count'])
+        test_prfa.update(tp=vp['tp'], tn=vp['tn'], fn=vp['fn'], fp=vp['fp'])
+    cache['test_log'].append([test_loss.average, *test_prfa.prfa()])
+    cache['test_scores'] = json.dumps(vars(test_prfa))
+    cache['global_test_score'].append(vars(test_prfa))
+    core.datautils.save_logs(cache, plot_keys=['train_log', 'validation_log'], file_keys=['test_log', 'test_scores'],
+                             log_dir=cache['log_dir'])
+
+
+def send_global_scores(cache, state):
+    out = {}
+    score = Prf1a()
+    for sc in cache['global_test_score']:
+        score.update(tp=sc['tp'], tn=sc['tn'], fn=sc['fn'], fp=sc['fp'])
+    cache['global_test_score'] = ['Precision,Recall,F1,Accuracy']
+    cache['global_test_score'].append(score.prfa())
+    core.datautils.save_logs(cache, file_keys=['global_test_score'],
+                             log_dir=state['outputDirectory'] + os.sep + cache['id'])
+    out['results_zip'] = f"{cache['id']}_" + '_'.join(str(datetime.datetime.now()).split(' '))
+    shutil.make_archive(f"{state['transferDirectory']}{os.sep}{out['results_zip']}", 'zip', cache['log_dir'])
+    return out
+
+
+def set_mode(input, mode=None):
+    out = {}
+    for site, site_vars in input.items():
+        out[site] = mode if mode else site_vars['mode']
     return out
 
 
 if __name__ == "__main__":
-
     args = json.loads(sys.stdin.read())
     cache = args['cache']
     input = args['input']
@@ -55,76 +172,54 @@ if __name__ == "__main__":
     out = {}
 
     nxt_phase = input.get('phase', 'init_runs')
-    if nxt_phase == 'init_runs':
+    if check(all, 'phase', 'init_runs', input):
         """
-        Generate folds as specified. 
+        Initialize all folds and loggers
         """
-        cache.update(**input)
-        out.update(**init_k_folds(cache, state))
-        cache['_mode_'] = input['mode']
-        out['mode'] = cache['mode']
-        splits = os.listdir(state['baseDirectory'] + sep + cache['split_dir'])
+        cache['global_test_score'] = []
+        init_runs(cache, input)
+        out['run'] = next_run(cache, state)
+        out['global_modes'] = set_mode(input)
+        nxt_phase = 'init_nn'
 
-    if nxt_phase == 'init_nn':
+    if check(all, 'phase', 'computation', input):
         """
-        Initialize neural network/optimizer and GPUs
+        Main computation phase where we aggregate sites information
+        We also handle train/validation/test stages of local sites by sending corresponding signals from here
         """
-        cache.update(**input['run'][state['clientId']], epoch=0, cursor=0, train_log=[])
-        cache['split_file'] = cache['splits'][cache['split_ix']]
-        cache['log_dir'] = state['outputDirectory'] + sep + cache['id'] + sep + cache['split_file'].split('.')[0]
-        os.makedirs(cache['log_dir'], exist_ok=True)
-        cache['current_nn_state'] = 'current.nn.pt'
-        cache['best_nn_state'] = 'best.nn.pt'
-        nn = ut.init_nn(cache, init_weights=True)
-        ut.save_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['current_nn_state'])
-        ut.init_dataset(cache, state)
         nxt_phase = 'computation'
+        if check(any, 'mode', 'train', input):
+            out.update(**aggregate_sites_info(input))
+            out['global_modes'] = set_mode(input)
 
-    if nxt_phase == 'computation':
+        if check(all, 'mode', 'val_waiting', input):
+            out['global_modes'] = set_mode(input, mode='validation')
+
+        if check(all, 'mode', 'train_waiting', input):
+            out.update(**on_epoch_end(cache, input))
+            out['global_modes'] = set_mode(input, mode='train')
+
+        if check(all, 'mode', 'test', input):
+            out.update(**on_epoch_end(cache, input))
+            out['global_modes'] = set_mode(input, mode='test')
+
+    if check(all, 'phase', 'next_run_waiting', input):
         """
-        Train/validation and test phases
+        This block runs when a fold has completed all train, test, validation phase.
+        We save all the scores and plot the results.
+        We transition to new fold if there is any left, else we stop the distributed computation with a success signal.
         """
-        nn = ut.init_nn(cache, init_weights=False)
-        out['mode'] = input['global_modes'].get(state['clientId'], cache['mode'])
-
-        if input.get('save_current_as_best'):
-            ut.load_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['current_nn_state'])
-            ut.save_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['best_nn_state'])
-
-        if out['mode'] in ['train', 'val_waiting']:
-            """
-            All sites must begin/resume the training the same time.
-            To enforce this, we have a 'val_waiting' status. Lagged sites will go to this status, and reshuffle the data,
-             take part in the training with everybody until all sites go to 'val_waiting' status.
-            """
-            ut.load_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['current_nn_state'])
-            out.update(**train(cache, input, state, nn['model'], nn['optimizer'], device=nn['device']))
-            ut.save_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['current_nn_state'])
-            out.update(**next_iter(cache))
-
-        elif out['mode'] == 'validation':
-            """
-            Once all sites are in 'val_waiting' status, remote issues 'validation' signal. 
-            Once all sites run validation phase, they go to 'train_waiting' status. 
-            Once all sites are in this status, remote issues 'train' signal and all sites reshuffle the indices and resume training.
-            We send the confusion matrix to the remote to accumulate global score for model selection.
-            """
-            ut.load_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['current_nn_state'])
-            avg, scores = evaluation(cache, state, nn['model'], split_key='validation', device=nn['device'])
-            out['validation_log'] = [vars(avg), vars(scores)]
-            out.update(**next_epoch(cache))
-
-        elif out['mode'] == 'test':
-            """
-            We send confusion matrix to remote for global test score.
-            """
-            ut.load_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['best_nn_state'])
-            avg, scores = evaluation(cache, state, nn['model'], split_key='validation', device=nn['device'])
-            out['test_log'] = [vars(avg), vars(scores)]
-            out['mode'] = cache['_mode_']
-            nxt_phase = 'next_run_waiting'
+        save_test_scores(cache, input)
+        if len(cache['folds']) > 0:
+            out['nn'] = {}
+            out['run'] = next_run(cache, state)
+            out['global_modes'] = set_mode(input)
+            nxt_phase = 'init_nn'
+        else:
+            out.update(**send_global_scores(cache, state))
+            nxt_phase = 'success'
 
     out['phase'] = nxt_phase
-    output = json.dumps({'output': out, 'cache': cache})
+    output = json.dumps({'output': out, 'cache': cache, 'success': check(all, 'phase', 'success', input)})
     sys.stdout.write(output)
     args, cache, input, state, out, output = [None] * 6
