@@ -22,9 +22,9 @@ class PooledDataset(NiftiDataset):
 
 
 def get_dataset(conf, fold, split_key=None):
-    dataset = PooledDataset(files_dir=f"test/input/local{s}/simulatorRun/{conf['data_dir']['value']}",
-                            labels_dir=f"test/input/local{s}/simulatorRun/{conf['label_dir']['value']}",
-                            mode='pooled')
+    dataset = PooledDataset(data_dir=f"test/input/local{s}/simulatorRun/{conf['data_dir']['value']}",
+                            label_dir=f"test/input/local{s}/simulatorRun/{conf['label_dir']['value']}",
+                            mode=split_key)
     split_file = f"test/input/local{s}/simulatorRun/{conf['split_dir']['value']}/SPLIT_{fold}.json"
     split = json.loads(open(split_file).read())
     dataset.load_indices(split[split_key])

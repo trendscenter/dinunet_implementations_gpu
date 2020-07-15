@@ -28,10 +28,10 @@
       "value": 2
     },
     "epochs": {
-      "value": 11
+      "value": 51
     },
     "batch_size": {
-      "value": 16
+      "value": 8
     },
     "learning_rate": {
       "value": 0.001
@@ -66,10 +66,10 @@
       "value": 2
     },
     "epochs": {
-      "value": 11
+      "value": 51
     },
     "batch_size": {
-      "value": 16
+      "value": 8
     },
     "learning_rate": {
       "value": 0.001
@@ -104,10 +104,10 @@
       "value": 2
     },
     "epochs": {
-      "value": 11
+      "value": 51
     },
     "batch_size": {
-      "value": 16
+      "value": 8
     },
     "learning_rate": {
       "value": 0.001
@@ -142,10 +142,10 @@
       "value": 2
     },
     "epochs": {
-      "value": 11
+      "value": 51
     },
     "batch_size": {
-      "value": 16
+      "value": 8
     },
     "learning_rate": {
       "value": 0.001

@@ -1,21 +1,21 @@
 {
   "meta": {
     "name": "Multi Shot ANN example",
-    "id": "msann_freesurfer",
+    "id": "vbm",
     "version": "v1.0.0",
     "repository": "",
     "description": "..."
   },
   "computation": {
     "type": "docker",
-    "dockerImage": "msann",
+    "dockerImage": "vbm",
     "command": [
       "python",
       "\/computation\/local.py"
     ],
     "remote": {
       "type": "docker",
-      "dockerImage": "msann",
+      "dockerImage": "vbm",
       "command": [
         "python",
         "\/computation\/remote.py"
