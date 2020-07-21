@@ -65,7 +65,7 @@ def create_k_fold_splits(files, k=0, save_to_dir=None, shuffle_files=True):
 
 def init_k_folds(cache, state):
     """
-    If one want to use custom splits:- Populate splits_dir as specified in inputs spec with split files(.json)
+    If one wants to use custom splits:- Populate splits_dir as specified in inputs spec with split files(.json)
         with list of file names on each train, validation, and test keys.
     Number of split files should be equal to num_of_folds passed in inputspec
     If nothing is provided, random k-splits will be created.
@@ -76,6 +76,7 @@ def init_k_folds(cache, state):
     split_dir = state['baseDirectory'] + sep + cache['split_dir']
 
     cache['split_dir'] = state['outputDirectory'] + sep + cache['id'] + sep + cache['split_dir']
+    shutil.rmtree(cache['split_dir'], ignore_errors=True)
     os.makedirs(cache['split_dir'], exist_ok=True)
 
     if not os.path.exists(split_dir) or len(os.listdir(split_dir)) == 0:
