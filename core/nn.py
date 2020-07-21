@@ -30,7 +30,8 @@ def next_epoch(cache):
     """
     out = {}
     cache['epoch'] += 1
-    if cache['epoch'] >= cache['epochs']:
+    if cache['epoch'] - cache.get('best_epoch', cache['epoch']) \
+            >= cache['patience'] or cache['epoch'] >= cache['epochs']:
         out['mode'] = 'test'
     else:
         cache['cursor'] = 0
@@ -52,8 +53,7 @@ def init_dataset(cache, state, datset_cls, min_batch_size=4):
      (logic in __nextitem__) of the data loader.
     """
     dataset = datset_cls(cache=cache, state=state, mode=cache['mode'])
-    split = json.loads(
-        open(state['baseDirectory'] + sep + cache['split_dir'] + sep + cache['split_file']).read())
+    split = json.loads(open(cache['split_dir'] + sep + cache['split_file']).read())
     dataset.load_indices(files=split['train'])
     cache['data_indices'] = dataset.indices
     if len(dataset) % cache['batch_size'] >= min_batch_size:
@@ -132,8 +132,7 @@ def evaluation(cache, state, model, split_key, dataset_cls, **kw):
     avg = Avg()
     eval_score = new_metrics(cache['num_class'])
     eval_predictions = ['file,true_label,prediction,probability']
-    with torch.no_grad(), open(
-            state['baseDirectory'] + sep + cache['split_dir'] + sep + cache['split_file']) as split_file:
+    with torch.no_grad(), open(cache['split_dir'] + sep + cache['split_file']) as split_file:
         eval_dataset = dataset_cls(cache=cache, state=state, mode=split_key)
         split = json.loads(split_file.read())
         eval_dataset.load_indices(files=split[split_key])
@@ -159,6 +158,7 @@ def train_n_eval(nn, cache, input, state, dataset_cls, nxt_phase):
     if input.get('save_current_as_best'):
         ut.load_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['current_nn_state'])
         ut.save_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['best_nn_state'])
+        cache['best_epoch'] = cache['epoch']
 
     if out['mode'] in ['train', 'val_waiting']:
         """

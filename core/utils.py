@@ -9,6 +9,7 @@ import torch.nn as nn
 from sklearn.preprocessing import MinMaxScaler
 from torch.utils.data import DataLoader, Dataset
 from torch.utils.data._utils.collate import default_collate
+import shutil
 
 plt.switch_backend('agg')
 plt.rcParams["figure.figsize"] = [16, 9]
@@ -68,29 +69,35 @@ def init_k_folds(cache, state):
         with list of file names on each train, validation, and test keys.
     Number of split files should be equal to num_of_folds passed in inputspec
     If nothing is provided, random k-splits will be created.
-
+    Splits will be copied/created in output directory to have everything of a result at the same place.
     """
     out = {}
+    cache['split_dir'] = cache.get('split_dir', 'splits')
     split_dir = state['baseDirectory'] + sep + cache['split_dir']
-    os.makedirs(split_dir, exist_ok=True)
-    if len(os.listdir(split_dir)) == 0:
+
+    cache['split_dir'] = state['outputDirectory'] + sep + cache['id'] + sep + cache['split_dir']
+    os.makedirs(cache['split_dir'], exist_ok=True)
+
+    if not os.path.exists(split_dir) or len(os.listdir(split_dir)) == 0:
         create_k_fold_splits(files=os.listdir(state['baseDirectory'] + sep + cache['data_dir']),
                              k=cache['num_of_folds'],
-                             save_to_dir=split_dir)
-    elif len(os.listdir(split_dir)) != cache['num_of_folds']:
+                             save_to_dir=cache['split_dir'])
+    elif len(os.listdir(split_dir)) == cache['num_of_folds']:
+        [shutil.copy(split_dir + sep + f, cache['split_dir'] + sep + f) for f in os.listdir(split_dir)]
+    else:
         raise ValueError(f"Number of splits in {split_dir} of site {state['clientId']} \
                          must be {cache['num_of_folds']} instead of {len(os.listdir(split_dir))}")
 
-    splits = sorted(os.listdir(split_dir))
+    splits = sorted(os.listdir(cache['split_dir']))
     cache['splits'] = dict(zip(range(len(splits)), splits))
     out['splits'] = {}
     for i, sp in cache['splits'].items():
-        sp = json.loads(open(f"{split_dir}/{sp}").read())
+        sp = json.loads(open(f"{cache['split_dir']}/{sp}").read())
         out['splits'][i] = len(sp['train'])
     out['batch_size'] = cache['batch_size']
     out['id'] = cache['id']
     return out
-
+    
 
 def safe_collate(batch):
     return default_collate([b for b in batch if b])
