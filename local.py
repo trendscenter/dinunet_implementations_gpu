@@ -50,7 +50,7 @@ class NiftiDataset(NNDataset):
         return {'inputs': torch.tensor(nif.copy()[None, :]), 'labels': torch.tensor(y)}
 
 
-def init_nn(cache, init_weights=False):
+def init_nn(cache, state, init_weights=False):
     """
     Initialize neural network/optimizer with locked parameters(check on remote script for that).
     Also detect and assign specified GPUs.
