@@ -7,7 +7,7 @@
     * Multi class classification uses Confusion matrix and micro/macro F1 scores(see core/measurements.py). 
 * **For regression tasks, one should change the above plus:**
     * core/nn.py, iteration(...)
-    * local.py, init_cache(...)
+    * remote.py, next_run(...), to specify the headers scores you want to save.
 * **pooled.py is an easy way of running a pooled experiment on all site without out having to move data in any sort. It will internally pool data from all site and feed to the network.**
 * **We use float16 (default is float32) bit precision to transfer gradients. It reduces the size of payload by half.**
 
