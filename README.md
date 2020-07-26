@@ -9,7 +9,7 @@
     * core/nn.py, iteration(...)
     * local.py, init_cache(...)
 * **pooled.py is an easy way of running a pooled experiment on all site without out having to move data in any sort. It will internally pool data from all site and feed to the network.**
-* **We use float16 (default is float32) bit precision to transfer gradients. It reduces the size of payload by half**
+* **We use float16 (default is float32) bit precision to transfer gradients. It reduces the size of payload by half.**
 
 ![DINUNET_vbm](assets/dinunet.png)
 ### Structure
