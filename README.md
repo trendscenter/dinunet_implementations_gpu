@@ -9,9 +9,8 @@
     * core/nn.py, iteration(...)
     * local.py, init_cache(...)
 * pooled.py is an easy way of running a pooled experiment on all site without out having to move data in any sort. It will internally pool data from all site and feed to the network.
- 
- ![DINUNET](assets/dinunet.png)
 
+![DINUNET](assets/dinunet.png)
 ### Structure
 * [dinunet/assets](https://github.com/trendscenter/dinunet/tree/master/assets)
 * [dinunet/<input_folder_placeholder>](https://github.com/trendscenter/dinunet/tree/master/test) An example for input folder format.
