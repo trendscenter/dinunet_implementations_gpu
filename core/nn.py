@@ -2,7 +2,6 @@ import json
 import random
 from os import sep
 
-import numpy as np
 import torch
 from torch.nn import functional as F
 
@@ -76,7 +75,7 @@ def iteration(cache, batch, model, optimizer=None, **kw):
         loss.backward()
         if kw.get('avg_grad') is not None:
             for i, param in enumerate(model.parameters()):
-                tensor = torch.tensor(kw.get('avg_grad')[i]).to(kw['device']).float()
+                tensor = kw.get('avg_grad')[i].float().to(kw['device'])
                 param.grad.data = torch.autograd.Variable(tensor)
             optimizer.step()
 
@@ -101,14 +100,14 @@ def train(cache, input, state, model, optimizer, dataset_cls, **kw):
     out = {}
     model.train()
     model = model.to(kw['device'])
-    avg_grads = np.load(state['baseDirectory'] + sep + input['avg_grads_file'], allow_pickle=True) \
+    avg_grads = torch.load(state['baseDirectory'] + sep + input['avg_grads_file']) \
         if input.get('avg_grads_file') else None
     batch = get_next_batch(cache, state, dataset_cls)
     it = iteration(cache, batch, model, optimizer, avg_grad=avg_grads, device=kw['device'])
     cache['train_log'].append([vars(it['loss']), vars(it['score'])])
-    out['grads_file'] = 'grads.npy'
-    np.save(state['transferDirectory'] + sep + out['grads_file'],
-            np.array([p.grad.numpy() for p in model.parameters()]))
+    out['grads_file'] = 'grads.tar'
+    grads = [p.grad.type(torch.float16) for p in model.parameters()]
+    torch.save(grads, state['transferDirectory'] + sep + out['grads_file'])
     return out
 
 

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "name": "Multi Shot ANN example",
+    "name": "Multi Shot nn VBM 3d images",
     "id": "vbm",
     "version": "v1.0.0",
     "repository": "",
@@ -13,32 +13,41 @@
       "python",
       "\/computation\/local.py"
     ],
+    "dockerOptions": {
+      "HostConfig": {
+        "DeviceRequests": [
+          {
+            "Drivers": "nvidia",
+            "Capabilities": [
+              [
+                "gpu"
+              ]
+            ]
+          }
+        ]
+      }
+    },
     "remote": {
       "type": "docker",
       "dockerImage": "vbm",
       "command": [
         "python",
         "\/computation\/remote.py"
-      ]
-    },
-    "input": {
-      "startingValue":
-      {
-        "defaultValue": 0,
-        "label": "Starting input",
-        "min": 0,
-        "step": 1,
-        "type": "number",
-        "source": "owner"
+      ],
+      "dockerOptions": {
+        "HostConfig": {
+          "DeviceRequests": [
+            {
+              "Drivers": "nvidia",
+              "Capabilities": [
+                [
+                  "gpu"
+                ]
+              ]
+            }
+          ]
+        }
       }
-
-    },
-    "output": {
-      "outputNumber" : {
-        "type": "number"
-      }
-    },
-    "display": [
-    ]
+    }
   }
 }

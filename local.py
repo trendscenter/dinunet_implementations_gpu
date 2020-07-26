@@ -56,10 +56,7 @@ def init_nn(cache, init_weights=False):
     Also detect and assign specified GPUs.
     @note Works only with one GPU per site at the moment.
     """
-    if torch.cuda.is_available() and cache.get('use_gpu'):
-        device = torch.device("cuda:0")
-    else:
-        device = torch.device("cpu")
+    device = ut.get_cuda_device(cache, state)
     model = VBMNet(in_ch=cache['input_ch'], num_class=cache['num_class'])
     optimizer = torch.optim.Adam(model.parameters(), lr=cache['learning_rate'])
     if init_weights:
@@ -96,7 +93,7 @@ if __name__ == "__main__":
         os.makedirs(cache['log_dir'], exist_ok=True)
         cache['current_nn_state'] = 'current.nn.pt'
         cache['best_nn_state'] = 'best.nn.pt'
-        nn = init_nn(cache, init_weights=True)
+        nn = init_nn(cache, state, init_weights=True)
         ut.save_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['current_nn_state'])
         init_dataset(cache, state, NiftiDataset)
         nxt_phase = 'computation'
@@ -105,7 +102,7 @@ if __name__ == "__main__":
         """
         Train/validation and test phases
         """
-        nn = init_nn(cache, init_weights=False)
+        nn = init_nn(cache, state, init_weights=False)
         out_, nxt_phase = train_n_eval(nn, cache, input, state, NiftiDataset, nxt_phase)
         out.update(**out_)
 

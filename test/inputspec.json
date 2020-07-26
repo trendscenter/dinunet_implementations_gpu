@@ -12,8 +12,8 @@
     "mode": {
       "value": "train"
     },
-    "use_gpu": {
-      "value": true
+    "gpus": {
+      "value": [0]
     },
     "id": {
       "value": "vbm"
@@ -50,8 +50,8 @@
     "mode": {
       "value": "train"
     },
-    "use_gpu": {
-      "value": true
+    "gpus": {
+      "value": [0]
     },
     "id": {
       "value": "vbm"
@@ -88,8 +88,8 @@
     "mode": {
       "value": "train"
     },
-    "use_gpu": {
-      "value": true
+    "gpus": {
+      "value": [1]
     },
     "id": {
       "value": "vbm"
@@ -126,8 +126,8 @@
     "mode": {
       "value": "train"
     },
-    "use_gpu": {
-      "value": true
+    "gpus": {
+      "value": [1]
     },
     "id": {
       "value": "vbm"
