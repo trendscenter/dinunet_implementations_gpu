@@ -42,7 +42,7 @@ class UpConv3d(nn.Module):
 
 
 class VBMNet(nn.Module):
-    def __init__(self, in_ch, num_class, r=4):
+    def __init__(self, in_ch, num_class, r=16):
         super(VBMNet, self).__init__()
         self.c0 = BasicConv3d(in_ch, r, kernel_size=3, padding=0)
         self.c1 = MXPConv3d(r, r, kernel_size=2, stride=2)

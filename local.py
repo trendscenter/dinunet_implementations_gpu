@@ -47,7 +47,7 @@ class NiftiDataset(NNDataset):
         nif[nif < 0.05] = 0
         if random.uniform(0, 1) > 0.15:
             nif = np.flip(nif, random.choice(self.axises))
-        return {'inputs': torch.tensor(nif.copy()[None, :]), 'labels': torch.tensor(y)}
+        return {'inputs': torch.tensor(nif.copy()[None, :]), 'labels': torch.tensor(y),  'ix': torch.tensor(ix)}
 
 
 def init_nn(cache, state, init_weights=False):

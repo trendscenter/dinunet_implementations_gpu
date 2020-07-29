@@ -13,7 +13,9 @@
       "value": "train"
     },
     "gpus": {
-      "value": [0]
+      "value": [
+        0
+      ]
     },
     "id": {
       "value": "vbm"
@@ -28,10 +30,13 @@
       "value": 2
     },
     "epochs": {
-      "value": 51
+      "value": 11
+    },
+    "patience": {
+      "value": 11
     },
     "batch_size": {
-      "value": 8
+      "value": 24
     },
     "learning_rate": {
       "value": 0.001
@@ -51,7 +56,9 @@
       "value": "train"
     },
     "gpus": {
-      "value": [0]
+      "value": [
+        0
+      ]
     },
     "id": {
       "value": "vbm"
@@ -66,10 +73,13 @@
       "value": 2
     },
     "epochs": {
-      "value": 51
+      "value": 11
+    },
+    "patience": {
+      "value": 11
     },
     "batch_size": {
-      "value": 8
+      "value": 24
     },
     "learning_rate": {
       "value": 0.001
@@ -89,7 +99,9 @@
       "value": "train"
     },
     "gpus": {
-      "value": [1]
+      "value": [
+        1
+      ]
     },
     "id": {
       "value": "vbm"
@@ -104,10 +116,13 @@
       "value": 2
     },
     "epochs": {
-      "value": 51
+      "value": 11
+    },
+    "patience": {
+      "value": 11
     },
     "batch_size": {
-      "value": 8
+      "value": 24
     },
     "learning_rate": {
       "value": 0.001
@@ -127,7 +142,9 @@
       "value": "train"
     },
     "gpus": {
-      "value": [1]
+      "value": [
+        1
+      ]
     },
     "id": {
       "value": "vbm"
@@ -142,10 +159,13 @@
       "value": 2
     },
     "epochs": {
-      "value": 51
+      "value": 11
+    },
+    "patience": {
+      "value": 11
     },
     "batch_size": {
-      "value": 8
+      "value": 24
     },
     "learning_rate": {
       "value": 0.001
