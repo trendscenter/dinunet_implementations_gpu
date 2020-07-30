@@ -30,10 +30,10 @@
       "value": 2
     },
     "epochs": {
-      "value": 11
+      "value": 51
     },
     "patience": {
-      "value": 11
+      "value": 21
     },
     "batch_size": {
       "value": 24
@@ -73,10 +73,10 @@
       "value": 2
     },
     "epochs": {
-      "value": 11
+      "value": 51
     },
     "patience": {
-      "value": 11
+      "value": 21
     },
     "batch_size": {
       "value": 24
@@ -116,10 +116,10 @@
       "value": 2
     },
     "epochs": {
-      "value": 11
+      "value": 51
     },
     "patience": {
-      "value": 11
+      "value": 21
     },
     "batch_size": {
       "value": 24
@@ -159,10 +159,10 @@
       "value": 2
     },
     "epochs": {
-      "value": 11
+      "value": 51
     },
     "patience": {
-      "value": 11
+      "value": 21
     },
     "batch_size": {
       "value": 24

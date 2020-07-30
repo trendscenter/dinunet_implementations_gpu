@@ -27,7 +27,7 @@ class NiftiDataset(NNDataset):
     def __init__(self, **kw):
         super().__init__(**kw)
         self.axises = []
-        axises = [0, 1, 2]
+        axises = [0, 1]
         for i in range(len(axises)):
             self.axises += list(itertools.combinations(axises, i + 1))
 
@@ -45,9 +45,9 @@ class NiftiDataset(NNDataset):
         file, y = self.indices[ix]
         nif = np.array(ni.load(self.data_dir + sep + file).dataobj)
         nif[nif < 0.05] = 0
-        if random.uniform(0, 1) > 0.15:
-            nif = np.flip(nif, random.choice(self.axises))
-        return {'inputs': torch.tensor(nif.copy()[None, :]), 'labels': torch.tensor(y),  'ix': torch.tensor(ix)}
+        # if random.uniform(0, 1) > 0.5:
+        #     nif = np.flip(nif, random.choice(self.axises))
+        return {'inputs': torch.tensor(nif.copy()[None, :]), 'labels': torch.tensor(y), 'ix': torch.tensor(ix)}
 
 
 def init_nn(cache, state, init_weights=False):
@@ -57,7 +57,7 @@ def init_nn(cache, state, init_weights=False):
     @note Works only with one GPU per site at the moment.
     """
     device = ut.get_cuda_device(cache, state)
-    model = VBMNet(in_ch=cache['input_ch'], num_class=cache['num_class'])
+    model = VBMNet(in_channels=cache['input_ch'], out_channels=cache['num_class'], init_features=8)
     optimizer = torch.optim.Adam(model.parameters(), lr=cache['learning_rate'])
     if init_weights:
         torch.manual_seed(cache['seed'])

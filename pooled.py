@@ -11,6 +11,8 @@ from torch.utils.data import ConcatDataset
 from core.measurements import Prf1a
 from core.utils import initialize_weights, NNDataLoader
 from models import VBMNet
+import torch.cuda.amp as amp
+import sys
 
 
 class PooledDataset(NiftiDataset):
@@ -45,15 +47,18 @@ def eval(data_loader, model, device):
 
 def train(fold, model, optim, device, epochs, train_loader, val_loader):
     best_score = 0.0
+    scaler = amp.GradScaler()
     for ep in range(epochs):
         for i, batch in enumerate(train_loader):
             inputs, labels = batch['inputs'].to(device).float(), batch['labels'].to(device).long()
 
             optim.zero_grad()
-            out = F.log_softmax(model(inputs), 1)
-            loss = F.nll_loss(out, labels)
-            loss.backward()
-            optim.step()
+            with amp.autocast():
+                out = F.log_softmax(model(inputs), 1)
+                loss = F.nll_loss(out, labels)
+            scaler.scale(loss).backward()
+            scaler.step(optim)
+            scaler.update()
 
             _, preds = torch.max(out, 1)
             score = Prf1a()
@@ -72,11 +77,11 @@ def train(fold, model, optim, device, epochs, train_loader, val_loader):
 if __name__ == "__main__":
     torch.backends.cudnn.enabled = False
     mode = 'train'
-    R = 16
+    R = 8
     LR = 0.001
     BZ = 16
     device = torch.device('cuda')
-    epochs = 251
+    epochs = 31
     os.makedirs('pooled_log', exist_ok=True)
     global_score = Prf1a()
     for fold in range(10):
@@ -87,7 +92,7 @@ if __name__ == "__main__":
             val_set.append(get_dataset(conf, fold, 'validation'))
             test_set.append(get_dataset(conf, fold, 'test'))
 
-        model = VBMNet(1, 2, r=R)
+        model = VBMNet(1, 2, init_features=R)
         model = nn.DataParallel(model)
         model = model.to(device)
         initialize_weights(model)
