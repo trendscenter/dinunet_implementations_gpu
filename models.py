@@ -114,9 +114,9 @@ class VBMNet(nn.Module):
         return torch.cat([t, small], 1)
 
 
-m = VBMNet(in_channels=1, out_channels=2, init_features=8)
-params_count = sum(p.numel() for p in m.parameters() if p.requires_grad)
-print(params_count)
+# m = VBMNet(in_channels=1, out_channels=2, init_features=8)
+# params_count = sum(p.numel() for p in m.parameters() if p.requires_grad)
+# print(params_count)
 # i = torch.randn((8, 1, 121, 145, 121))
 # o = m(i)
 # print("Out shape:", o.shape)
