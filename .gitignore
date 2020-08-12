@@ -121,4 +121,4 @@ venv.bak/
 .dmypy.json
 dmypy.json
 test
-data
+dataset
