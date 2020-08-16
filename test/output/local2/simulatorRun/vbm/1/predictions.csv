@@ -1,0 +1,7 @@
+file,true_label,prediction,probability
+M55437505_swc1t1r1_brain.nii,1,1,0.791
+M55447969_swc1t1r1_brain.nii,1,1,0.854
+M55480294_swc1t1r1_brain.nii,0,1,0.76
+M55465452_swc1t1r1_brain.nii,1,1,0.518
+M55415129_swc1t1r1_brain.nii,1,1,0.594
+M55474763_swc1t1r1_brain.nii,1,1,0.662

@@ -1,0 +1,6 @@
+file,true_label,prediction,probability
+M02169019_swc1t1avg.nii,0,1,0.584
+M02130199_swc1t1avg.nii,0,0,0.459
+M02161598_swc1t1avg.nii,1,1,0.747
+M02179730_swc1t1avg.nii,1,1,0.545
+M02155567_swc1t1avg.nii,1,1,0.532

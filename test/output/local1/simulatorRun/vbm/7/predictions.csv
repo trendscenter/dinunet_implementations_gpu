@@ -1,0 +1,11 @@
+file,true_label,prediction,probability
+M52202304_swc1t1_brain.nii,0,1,0.633
+M52252370_swc1t1_brain.nii,0,0,0.394
+M52204446_swc1t1_brain.nii,0,0,0.423
+M52258644_swc1t1_brain.nii,1,1,0.609
+M52288332_swc1t1_brain.nii,0,0,0.329
+M52270333_swc1t1_brain.nii,0,0,0.365
+M52222147_swc1t1_brain.nii,0,0,0.489
+M52246798_swc1t1_brain.nii,0,0,0.326
+M52226657_swc1t1_brain.nii,0,0,0.321
+M52211863_swc1t1_brain.nii,1,1,0.873
