@@ -75,7 +75,7 @@ if __name__ == "__main__":
     global_score = Prf1a()
     inputspecs = json.loads(open('test/inputspec.json').read())
     args = inputspecs[0]
-    args['epochs']['value'] *= 4
+    args['epochs']['value'] *= 2
     init_features = 8
     for fold in range(10):
 
