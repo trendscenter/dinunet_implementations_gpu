@@ -108,7 +108,7 @@ if __name__ == "__main__":
             test_set = []
             for s, conf in enumerate(inputspecs):
                 test_set.append(get_dataset(s, conf, fold, 'test'))
-            test_dset = ConcatDataset(train_set)
+            test_dset = ConcatDataset(test_set)
             test_loader = NNDataLoader.new(dataset=test_dset, batch_size=args['batch_size']['value'], pin_memory=True,
                                            shuffle=True)
             model.load_state_dict(torch.load(f'pooled_log/best_{fold}.pt'))
