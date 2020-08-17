@@ -75,7 +75,7 @@ def iteration(cache, batch, model, optimizer=None, **kw):
         loss.backward()
         if kw.get('avg_grad') is not None:
             for i, param in enumerate(model.parameters()):
-                tensor = kw.get('avg_grad')[i].float().to(kw['device'])
+                tensor = kw.get('avg_grad')[i].to(kw['device'])
                 param.grad.data = torch.autograd.Variable(tensor)
             optimizer.step()
 
@@ -106,7 +106,7 @@ def train(cache, input, state, model, optimizer, dataset_cls, **kw):
     it = iteration(cache, batch, model, optimizer, avg_grad=avg_grads, device=kw['device'])
     cache['train_log'].append([vars(it['loss']), vars(it['score'])])
     out['grads_file'] = 'grads.tar'
-    grads = [p.grad.type(torch.float16) for p in model.parameters()]
+    grads = [p.grad for p in model.parameters()]
     torch.save(grads, state['transferDirectory'] + sep + out['grads_file'])
     return out
 

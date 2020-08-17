@@ -4,13 +4,12 @@ import json
 import os
 import shutil
 import sys
-from itertools import repeat
-
-import numpy as np
 
 import core.utils
 from core.measurements import Prf1a, Avg
 import torch
+import random
+
 
 # import pydevd_pycharm
 #
@@ -18,9 +17,7 @@ import torch
 
 
 def aggregate_sites_info(input):
-    """
-    Average each sites gradients and pass it to all sites.
-    """
+    """Average each sites gradients and pass it to all sites."""
     out = {}
     grads = []
     for site, site_vars in input.items():
@@ -29,57 +26,34 @@ def aggregate_sites_info(input):
     out['avg_grads_file'] = 'avg_grads.tar'
     avg_grads = []
     for layer_grad in zip(*grads):
-        """
-        RuntimeError: "sum_cpu" not implemented for 'Half' so must convert to float32.
-        """
-        layer_grad = [lg.type(torch.float32).cpu() for lg in layer_grad]
-        avg_grads.append(torch.stack(layer_grad).mean(0).type(torch.float16))
+        layer_grad = [lg.cpu() for lg in layer_grad]
+        avg_grads.append(torch.stack(layer_grad).mean(0))
     torch.save(avg_grads, state['transferDirectory'] + os.sep + out['avg_grads_file'])
     return out
 
 
 def init_runs(cache, input):
-    folds = []
-    for site, site_vars in input.items():
-        folds.append(list(zip(repeat(site), site_vars['splits'].items())))
-    cache['folds'] = list(zip(*folds))
-    cache.update(batch_size=[v['batch_size'] for _, v in input.items()][0])
     cache.update(id=[v['id'] for _, v in input.items()][0])
+    cache.update(num_folds=[v['num_folds'] for _, v in input.items()][0])
+    cache['folds'] = list(range(cache['num_folds']))[::-1]
 
 
-def next_run(cache, state):
-    """
-    This function pops a new fold, lock parameters, and forward init_nn signal to all sites
-    """
-    cache['fold'] = dict(cache['folds'].pop())
-    seed = 244627
-    log_dir = '_'.join([str(s) for s in set(f for _, (f, _) in cache['fold'].items())])
-    cache.update(log_dir=state['outputDirectory'] + os.sep + cache['id'] + os.sep + log_dir)
+def next_run(cache, input, state):
+    """This function pops a new fold, lock parameters, and forward init_nn signal to all sites"""
+    cache['fold'] = str(cache['folds'].pop())
+    seed = random.randint(1, int(1e11))
+    cache.update(log_dir=state['outputDirectory'] + os.sep + cache['id'] + os.sep + str(cache['fold']))
     os.makedirs(cache['log_dir'], exist_ok=True)
 
     cache.update(best_val_score=0)
     cache.update(train_log=['Loss,Precision,Recall,F1,Accuracy'],
                  validation_log=['Loss,Precision,Recall,F1,Accuracy'],
                  test_log=['Loss,Precision,Recall,F1,Accuracy'])
-    """
-    **** Parameter Lock ******
-    Batch sizes are distributed based on number of data items on each site.
-    We lock batch size because small dataset sometimes leads to batch size of 1, 2 on a particular site. 
-    It causes issue in batch norm computation. 
-    So we make sure that all the parameters we pass on to sites do not compromise the training process.
-    """
-    train_lens = dict([(site, ln[1]) for site, ln in cache['fold'].items()])
-    itr = sum(train_lens.values()) / cache['batch_size']
-    batch_sizes = {}
-    for site, bz in train_lens.items():
-        batch_sizes[site] = int(max(bz // itr, 1) + 1)
-    while sum(batch_sizes.values()) != cache['batch_size']:
-        largest = max(batch_sizes, key=lambda k: batch_sizes[k])
-        batch_sizes[largest] -= 1
+
+    """**** Parameter Lock ******"""
     out = {}
-    for site, (split_file, data_len) in cache['fold'].items():
-        out[site] = {'split_ix': split_file, 'data_len': data_len,
-                     'batch_size': batch_sizes[site], 'seed': seed}
+    for site, site_vars in input.items():
+        out[site] = {'split_ix': cache['fold'], 'seed': seed}
     return out
 
 
@@ -177,12 +151,10 @@ if __name__ == "__main__":
 
     nxt_phase = input.get('phase', 'init_runs')
     if check(all, 'phase', 'init_runs', input):
-        """
-        Initialize all folds and loggers
-        """
+        """Initialize all folds and loggers"""
         cache['global_test_score'] = []
         init_runs(cache, input)
-        out['run'] = next_run(cache, state)
+        out['run'] = next_run(cache, input, state)
         out['global_modes'] = set_mode(input)
         nxt_phase = 'init_nn'
 
@@ -216,7 +188,7 @@ if __name__ == "__main__":
         save_test_scores(cache, input)
         if len(cache['folds']) > 0:
             out['nn'] = {}
-            out['run'] = next_run(cache, state)
+            out['run'] = next_run(cache, input, state)
             out['global_modes'] = set_mode(input)
             nxt_phase = 'init_nn'
         else:

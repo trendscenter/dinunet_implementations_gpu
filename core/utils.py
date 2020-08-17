@@ -67,7 +67,7 @@ def init_k_folds(cache, state):
     """
     If one wants to use custom splits:- Populate splits_dir as specified in inputs spec with split files(.json)
         with list of file names on each train, validation, and test keys.
-    Number of split files should be equal to num_of_folds passed in inputspec
+    Number of split files should be equal to num_folds passed in inputspec
     If nothing is provided, random k-splits will be created.
     Splits will be copied/created in output directory to have everything of a result at the same place.
     """
@@ -81,21 +81,17 @@ def init_k_folds(cache, state):
 
     if not os.path.exists(split_dir) or len(os.listdir(split_dir)) == 0:
         create_k_fold_splits(files=os.listdir(state['baseDirectory'] + sep + cache['data_dir']),
-                             k=cache['num_of_folds'],
+                             k=cache['num_folds'],
                              save_to_dir=cache['split_dir'])
-    elif len(os.listdir(split_dir)) == cache['num_of_folds']:
+    elif len(os.listdir(split_dir)) == cache['num_folds']:
         [shutil.copy(split_dir + sep + f, cache['split_dir'] + sep + f) for f in os.listdir(split_dir)]
     else:
         raise ValueError(f"Number of splits in {split_dir} of site {state['clientId']} \
-                         must be {cache['num_of_folds']} instead of {len(os.listdir(split_dir))}")
+                         must be {cache['num_folds']} instead of {len(os.listdir(split_dir))}")
 
     splits = sorted(os.listdir(cache['split_dir']))
     cache['splits'] = dict(zip(range(len(splits)), splits))
-    out['splits'] = {}
-    for i, sp in cache['splits'].items():
-        sp = json.loads(open(f"{cache['split_dir']}/{sp}").read())
-        out['splits'][i] = len(sp['train'])
-    out['batch_size'] = cache['batch_size']
+    out['num_folds'] = cache['num_folds']
     out['id'] = cache['id']
     return out
 
