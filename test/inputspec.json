@@ -20,7 +20,7 @@
     "id": {
       "value": "vbm"
     },
-    "num_of_folds": {
+    "num_folds": {
       "value": 10
     },
     "input_ch": {
@@ -63,7 +63,7 @@
     "id": {
       "value": "vbm"
     },
-    "num_of_folds": {
+    "num_folds": {
       "value": 10
     },
     "input_ch": {
@@ -106,7 +106,7 @@
     "id": {
       "value": "vbm"
     },
-    "num_of_folds": {
+    "num_folds": {
       "value": 10
     },
     "input_ch": {
@@ -149,7 +149,7 @@
     "id": {
       "value": "vbm"
     },
-    "num_of_folds": {
+    "num_folds": {
       "value": 10
     },
     "input_ch": {
