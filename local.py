@@ -94,7 +94,7 @@ if __name__ == "__main__":
         cache['current_nn_state'] = 'current.nn.pt'
         cache['best_nn_state'] = 'best.nn.pt'
         nn = init_nn(cache, state, init_weights=True)
-        ut.save_checkpoint(cache, nn['model'], nn['optimizer'], id=cache['current_nn_state'])
+        ut.save_checkpoint(cache, nn, id=cache['current_nn_state'])
         init_dataset(cache, state, NiftiDataset)
         nxt_phase = 'computation'
 

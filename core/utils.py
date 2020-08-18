@@ -27,15 +27,15 @@ def initialize_weights(*models):
                 module.bias.data.zero_()
 
 
-def save_checkpoint(cache, model, optimizer, id):
-    chk = {'model_state_dict': model.state_dict(), 'optimizer_state_dict': optimizer.state_dict()}
+def save_checkpoint(cache, nn, id):
+    chk = {'model_state_dict': nn['model'].state_dict(), 'optimizer_state_dict': nn['optimizer'].state_dict()}
     torch.save(chk, cache['log_dir'] + sep + id)
 
 
-def load_checkpoint(cache, model, optimizer, id):
+def load_checkpoint(cache, nn, id):
     checkpoint = torch.load(cache['log_dir'] + sep + id)
-    model.load_state_dict(checkpoint['model_state_dict'])
-    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    nn['model'].load_state_dict(checkpoint['model_state_dict'])
+    nn['optimizer'].load_state_dict(checkpoint['optimizer_state_dict'])
 
 
 def create_k_fold_splits(files, k=0, save_to_dir=None, shuffle_files=True):

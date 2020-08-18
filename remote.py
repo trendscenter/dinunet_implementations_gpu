@@ -5,10 +5,10 @@ import os
 import shutil
 import sys
 
+import torch
+
 import core.utils
 from core.measurements import Prf1a, Avg
-import torch
-import random
 
 
 # import pydevd_pycharm
@@ -17,7 +17,9 @@ import random
 
 
 def aggregate_sites_info(input):
-    """Average each sites gradients and pass it to all sites."""
+    """
+    Average each sites gradients and pass it to all sites.
+    """
     out = {}
     grads = []
     for site, site_vars in input.items():
@@ -26,8 +28,11 @@ def aggregate_sites_info(input):
     out['avg_grads_file'] = 'avg_grads.tar'
     avg_grads = []
     for layer_grad in zip(*grads):
-        layer_grad = [lg.cpu() for lg in layer_grad]
-        avg_grads.append(torch.stack(layer_grad).mean(0))
+        """
+        RuntimeError: "sum_cpu" not implemented for 'Half' so must convert to float32.
+        """
+        layer_grad = [lg.type(torch.float32).cpu() for lg in layer_grad]
+        avg_grads.append(torch.stack(layer_grad).mean(0).type(torch.float16))
     torch.save(avg_grads, state['transferDirectory'] + os.sep + out['avg_grads_file'])
     return out
 
@@ -39,10 +44,12 @@ def init_runs(cache, input):
 
 
 def next_run(cache, input, state):
-    """This function pops a new fold, lock parameters, and forward init_nn signal to all sites"""
+    """
+    This function pops a new fold, lock parameters, and forward init_nn signal to all sites
+    """
     cache['fold'] = str(cache['folds'].pop())
-    seed = random.randint(1, int(1e11))
-    cache.update(log_dir=state['outputDirectory'] + os.sep + cache['id'] + os.sep + str(cache['fold']))
+    seed = 244627
+    cache.update(log_dir=state['outputDirectory'] + os.sep + cache['id'] + os.sep + cache['fold'])
     os.makedirs(cache['log_dir'], exist_ok=True)
 
     cache.update(best_val_score=0)
@@ -97,6 +104,7 @@ def on_epoch_end(cache, input):
         out['save_current_as_best'] = True
     else:
         out['save_current_as_best'] = False
+    core.utils.save_logs(cache, plot_keys=['train_log', 'validation_log'], log_dir=cache['log_dir'])
     return out
 
 
@@ -151,7 +159,9 @@ if __name__ == "__main__":
 
     nxt_phase = input.get('phase', 'init_runs')
     if check(all, 'phase', 'init_runs', input):
-        """Initialize all folds and loggers"""
+        """
+        Initialize all folds and loggers
+        """
         cache['global_test_score'] = []
         init_runs(cache, input)
         out['run'] = next_run(cache, input, state)
@@ -164,12 +174,9 @@ if __name__ == "__main__":
         We also handle train/validation/test stages of local sites by sending corresponding signals from here
         """
         nxt_phase = 'computation'
-        if check(any, 'mode', 'train', input):
+        if check(any, 'mode', 'train', input) or check(all, 'mode', 'val_waiting', input):
             out.update(**aggregate_sites_info(input))
             out['global_modes'] = set_mode(input)
-
-        if check(all, 'mode', 'val_waiting', input):
-            out['global_modes'] = set_mode(input, mode='validation')
 
         if check(all, 'mode', 'train_waiting', input):
             out.update(**on_epoch_end(cache, input))

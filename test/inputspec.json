@@ -36,7 +36,7 @@
       "value": 31
     },
     "batch_size": {
-      "value": 24
+      "value": 8
     },
     "learning_rate": {
       "value": 0.001
@@ -79,7 +79,7 @@
       "value": 31
     },
     "batch_size": {
-      "value": 24
+      "value": 8
     },
     "learning_rate": {
       "value": 0.001
@@ -122,7 +122,7 @@
       "value": 31
     },
     "batch_size": {
-      "value": 24
+      "value": 8
     },
     "learning_rate": {
       "value": 0.001
@@ -165,7 +165,7 @@
       "value": 31
     },
     "batch_size": {
-      "value": 24
+      "value": 8
     },
     "learning_rate": {
       "value": 0.001
