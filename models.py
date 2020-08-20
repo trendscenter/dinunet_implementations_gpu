@@ -9,7 +9,7 @@ class BasicConv3d(nn.Module):
     def __init__(self, in_channels, out_channels, **kw):
         super(BasicConv3d, self).__init__()
         self.conv = nn.Conv3d(in_channels, out_channels, bias=False, **kw)
-        self.bn = nn.BatchNorm3d(out_channels, eps=0.001)
+        self.bn = nn.BatchNorm3d(out_channels)
 
     def forward(self, x):
         x = self.conv(x)
@@ -82,8 +82,16 @@ class VBMNet(nn.Module):
 
         # self.drop = nn.Dropout3d(p=0.5)
         self.flat_size = init_features * 4 * 6 * 4
-        self.fc1 = nn.Linear(self.flat_size, 64)
-        self.out = nn.Linear(64, out_channels)
+        self.fc1 = nn.Linear(self.flat_size, 64 * init_features)
+        self.fc1_bn = nn.BatchNorm1d(64 * init_features)
+
+        self.fc2 = nn.Linear(64 * init_features, 32 * init_features)
+        self.fc2_bn = nn.BatchNorm1d(32 * init_features)
+
+        self.fc3 = nn.Linear(32 * init_features, 16 * init_features)
+        self.fc3_bn = nn.BatchNorm1d(16 * init_features)
+
+        self.out = nn.Linear(16 * init_features, out_channels)
 
     def forward(self, x):
         x1 = self.c1(x)
@@ -101,7 +109,11 @@ class VBMNet(nn.Module):
 
         # x = self.drop(x)
         x = x.view(-1, self.flat_size)
-        x = F.relu(self.fc1(x), inplace=True)
+
+        x = F.relu(self.fc1_bn(self.fc1(x)), inplace=True)
+        x = F.relu(self.fc2_bn(self.fc2(x)), inplace=True)
+        x = F.relu(self.fc3_bn(self.fc3(x)), inplace=True)
+
         return self.out(x)
 
     @staticmethod

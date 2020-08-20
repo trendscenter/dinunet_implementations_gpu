@@ -33,7 +33,7 @@
       "value": 51
     },
     "patience": {
-      "value": 31
+      "value": 11
     },
     "batch_size": {
       "value": 8
@@ -76,7 +76,7 @@
       "value": 51
     },
     "patience": {
-      "value": 31
+      "value": 11
     },
     "batch_size": {
       "value": 8
@@ -119,10 +119,10 @@
       "value": 51
     },
     "patience": {
-      "value": 31
+      "value": 11
     },
     "batch_size": {
-      "value": 8
+      "value": 16
     },
     "learning_rate": {
       "value": 0.001
@@ -162,7 +162,7 @@
       "value": 51
     },
     "patience": {
-      "value": 31
+      "value": 11
     },
     "batch_size": {
       "value": 8

@@ -43,15 +43,17 @@ def eval(data_loader, model, device):
     return score
 
 
-def train(fold, model, optim, device, epochs, train_loader, val_loader):
+def train(fold, model, optim, device, args, train_loader, val_loader):
     best_score = 0.0
-    for ep in range(epochs):
+    best_ep = 0
+    for ep in range(args['epochs']['value']):
         for i, batch in enumerate(train_loader):
             inputs, labels = batch['inputs'].to(device).float(), batch['labels'].to(device).long()
 
             optim.zero_grad()
             out = F.log_softmax(model(inputs), 1)
-            loss = F.nll_loss(out, labels)
+            wt = torch.randint(1, 101, (2,)).to(device).float()
+            loss = F.nll_loss(out, labels, weight=wt)
             loss.backward()
             optim.step()
 
@@ -59,14 +61,19 @@ def train(fold, model, optim, device, epochs, train_loader, val_loader):
             score = Prf1a()
             score.add(preds, labels)
             if i % int(math.log(i + 1) + 1) == 0:
-                print(f'Ep:{ep}/{epochs}, Itr:{i}/{len(train_loader)}, {round(loss.item(), 4)}, {score.prfa()}')
+                print(
+                    f"Ep:{ep}/{args['epochs']['value']}, Itr:{i}/{len(train_loader)}, {round(loss.item(), 4)}, {score.prfa()}")
         val_score = eval(val_loader, model, device)
         if val_score.f1 > best_score:
             best_score = val_score.f1
+            best_ep = ep
             torch.save(model.state_dict(), f'pooled_log/best_{fold}.pt')
             print(f'##### *** BEST saved ***  {best_score}')
         else:
             print('###### Not Improved:', val_score.f1, best_score)
+
+        if ep - best_ep >= args['patience']['value']:
+            break
 
 
 if __name__ == "__main__":
@@ -76,9 +83,10 @@ if __name__ == "__main__":
     inputspecs = json.loads(open('test/inputspec.json').read())
     args = inputspecs[0]
     args['epochs']['value'] = 31
-    args['batch_size']['value'] = 16
+    args['batch_size']['value'] = 8
+    args['patience']['value'] = 11
 
-    init_features = 4
+    init_features = 8
     for fold in range(10):
 
         train_set, val_set = [], []
@@ -90,7 +98,7 @@ if __name__ == "__main__":
             VBMNet(in_channels=args['input_ch']['value'], out_channels=args['num_class']['value'],
                    init_features=init_features))
         model = model.to(device)
-        # torch.manual_seed(244627)
+        torch.manual_seed(1234234)
         initialize_weights(model)
         optim = torch.optim.Adam(model.parameters(), lr=args['learning_rate']['value'])
 
@@ -103,7 +111,7 @@ if __name__ == "__main__":
             val_loader = NNDataLoader.new(dataset=val_dset, batch_size=args['batch_size']['value'], pin_memory=True,
                                           shuffle=True)
             print(f'Fold {fold}:', len(train_dset), len(val_dset))
-            train(fold, model, optim, device, args['epochs']['value'], train_loader, val_loader)
+            train(fold, model, optim, device, args, train_loader, val_loader)
             run_test = True
 
         if run_test:

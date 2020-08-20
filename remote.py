@@ -9,6 +9,7 @@ import torch
 
 import core.utils
 from core.measurements import Prf1a, Avg
+import random
 
 
 # import pydevd_pycharm
@@ -48,7 +49,7 @@ def next_run(cache, input, state):
     This function pops a new fold, lock parameters, and forward init_nn signal to all sites
     """
     cache['fold'] = str(cache['folds'].pop())
-    seed = 244627
+    seed = 1234234  # random.randint(1, int(1e6))
     cache.update(log_dir=state['outputDirectory'] + os.sep + cache['id'] + os.sep + cache['fold'])
     os.makedirs(cache['log_dir'], exist_ok=True)
 
