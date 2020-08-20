@@ -75,8 +75,10 @@ if __name__ == "__main__":
     global_score = Prf1a()
     inputspecs = json.loads(open('test/inputspec.json').read())
     args = inputspecs[0]
-    args['epochs']['value'] *= 2
-    init_features = 8
+    args['epochs']['value'] = 31
+    args['batch_size']['value'] = 16
+
+    init_features = 4
     for fold in range(10):
 
         train_set, val_set = [], []
@@ -88,7 +90,7 @@ if __name__ == "__main__":
             VBMNet(in_channels=args['input_ch']['value'], out_channels=args['num_class']['value'],
                    init_features=init_features))
         model = model.to(device)
-        torch.manual_seed(244627)
+        # torch.manual_seed(244627)
         initialize_weights(model)
         optim = torch.optim.Adam(model.parameters(), lr=args['learning_rate']['value'])
 
