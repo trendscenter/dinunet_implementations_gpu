@@ -89,7 +89,7 @@ if __name__ == "__main__":
         """
         cache.update(**input['run'][state['clientId']], epoch=0, cursor=0, train_log=[])
         cache['split_file'] = cache['splits'][cache['split_ix']]
-        cache['log_dir'] = state['outputDirectory'] + sep + cache['id'] + sep + str(cache['split_ix'])
+        cache['log_dir'] = state['outputDirectory'] + sep + cache['id'] + sep + f"fold_{cache['split_ix']}"
         os.makedirs(cache['log_dir'], exist_ok=True)
         cache['current_nn_state'] = 'current.nn.pt'
         cache['best_nn_state'] = 'best.nn.pt'

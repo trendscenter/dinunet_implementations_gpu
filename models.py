@@ -9,7 +9,7 @@ class BasicConv3d(nn.Module):
     def __init__(self, in_channels, out_channels, **kw):
         super(BasicConv3d, self).__init__()
         self.conv = nn.Conv3d(in_channels, out_channels, bias=False, **kw)
-        self.bn = nn.BatchNorm3d(out_channels)
+        self.bn = nn.BatchNorm3d(out_channels, track_running_stats=False)
 
     def forward(self, x):
         x = self.conv(x)
@@ -33,7 +33,7 @@ class UpConv3d(nn.Module):
     def __init__(self, in_channels, out_channels, **kw):
         super(UpConv3d, self).__init__()
         self.conv = nn.ConvTranspose3d(in_channels, out_channels, **kw)
-        self.bn = nn.BatchNorm3d(out_channels)
+        self.bn = nn.BatchNorm3d(out_channels, track_running_stats=False)
 
     def forward(self, x):
         x = self.conv(x)
@@ -82,16 +82,16 @@ class VBMNet(nn.Module):
 
         # self.drop = nn.Dropout3d(p=0.5)
         self.flat_size = init_features * 4 * 6 * 4
-        self.fc1 = nn.Linear(self.flat_size, 64 * init_features)
-        self.fc1_bn = nn.BatchNorm1d(64 * init_features)
+        self.fc1 = nn.Linear(self.flat_size, 32 * init_features)
+        self.fc1_bn = nn.BatchNorm1d(32 * init_features, track_running_stats=False)
 
-        self.fc2 = nn.Linear(64 * init_features, 32 * init_features)
-        self.fc2_bn = nn.BatchNorm1d(32 * init_features)
+        self.fc2 = nn.Linear(32 * init_features, 16 * init_features)
+        self.fc2_bn = nn.BatchNorm1d(16 * init_features, track_running_stats=False)
 
-        self.fc3 = nn.Linear(32 * init_features, 16 * init_features)
-        self.fc3_bn = nn.BatchNorm1d(16 * init_features)
+        self.fc3 = nn.Linear(16 * init_features, 8 * init_features)
+        self.fc3_bn = nn.BatchNorm1d(8 * init_features, track_running_stats=False)
 
-        self.out = nn.Linear(16 * init_features, out_channels)
+        self.out = nn.Linear(8 * init_features, out_channels)
 
     def forward(self, x):
         x1 = self.c1(x)
@@ -124,7 +124,6 @@ class VBMNet(nn.Module):
         t = large[:, :, diffa[2]:large.shape[2] - diffb[2], diffa[3]:large.shape[3] - diffb[3],
             diffa[4]:large.shape[2] - diffb[4]]
         return torch.cat([t, small], 1)
-
 
 # m = VBMNet(in_channels=1, out_channels=2, init_features=8)
 # params_count = sum(p.numel() for p in m.parameters() if p.requires_grad)

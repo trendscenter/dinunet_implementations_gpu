@@ -32,6 +32,7 @@ def get_dataset(site, conf, fold, split_key=None):
 
 
 def eval(data_loader, model, device):
+    model.eval()
     score = Prf1a()
     for i, batch in enumerate(data_loader):
         inputs, labels = batch['inputs'].to(device).float(), batch['labels'].to(device).long()

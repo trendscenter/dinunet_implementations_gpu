@@ -2,14 +2,14 @@
 import datetime
 import json
 import os
+import random
 import shutil
 import sys
 
-import torch
+import numpy as np
 
 import core.utils
 from core.measurements import Prf1a, Avg
-import random
 
 
 # import pydevd_pycharm
@@ -25,32 +25,33 @@ def aggregate_sites_info(input):
     grads = []
     for site, site_vars in input.items():
         grad_file = state['baseDirectory'] + os.sep + site + os.sep + site_vars['grads_file']
-        grads.append(torch.load(grad_file))
-    out['avg_grads_file'] = 'avg_grads.tar'
+        grads.append(np.load(grad_file, allow_pickle=True))
+    out['avg_grads'] = 'avg_grads.npy'
     avg_grads = []
     for layer_grad in zip(*grads):
-        """
-        RuntimeError: "sum_cpu" not implemented for 'Half' so must convert to float32.
-        """
-        layer_grad = [lg.type(torch.float32).cpu() for lg in layer_grad]
-        avg_grads.append(torch.stack(layer_grad).mean(0).type(torch.float16))
-    torch.save(avg_grads, state['transferDirectory'] + os.sep + out['avg_grads_file'])
+        avg_grads.append(np.array(layer_grad).mean(0))
+    np.save(state['transferDirectory'] + os.sep + out['avg_grads'], np.array(avg_grads))
     return out
 
 
 def init_runs(cache, input):
     cache.update(id=[v['id'] for _, v in input.items()][0])
     cache.update(num_folds=[v['num_folds'] for _, v in input.items()][0])
-    cache['folds'] = list(range(cache['num_folds']))[::-1]
+    cache.update(seed=[v.get('seed') for _, v in input.items()][0])
+    cache.update(seed=random.randint(0, int(1e6)) if cache['seed'] is None else cache['seed'])
+    cache['folds'] = []
+    for fold in range(cache['num_folds']):
+        cache['folds'].append({'split_ix': fold, 'seed': cache['seed']})
+
+    cache['folds'] = cache['folds'][::-1]
 
 
 def next_run(cache, input, state):
     """
     This function pops a new fold, lock parameters, and forward init_nn signal to all sites
     """
-    cache['fold'] = str(cache['folds'].pop())
-    seed = 1234234  # random.randint(1, int(1e6))
-    cache.update(log_dir=state['outputDirectory'] + os.sep + cache['id'] + os.sep + cache['fold'])
+    cache['fold'] = cache['folds'].pop()
+    cache.update(log_dir=state['outputDirectory'] + os.sep + cache['id'] + os.sep + f"fold_{cache['fold']['split_ix']}")
     os.makedirs(cache['log_dir'], exist_ok=True)
 
     cache.update(best_val_score=0)
@@ -61,7 +62,7 @@ def next_run(cache, input, state):
     """**** Parameter Lock ******"""
     out = {}
     for site, site_vars in input.items():
-        out[site] = {'split_ix': cache['fold'], 'seed': seed}
+        out[site] = cache['fold']
     return out
 
 
@@ -139,6 +140,7 @@ def send_global_scores(cache, state):
     cache['global_test_score'].append(score.prfa())
     core.utils.save_logs(cache, file_keys=['global_test_score'],
                          log_dir=state['outputDirectory'] + os.sep + cache['id'])
+
     out['results_zip'] = f"{cache['id']}_" + '_'.join(str(datetime.datetime.now()).split(' '))
     shutil.make_archive(f"{state['transferDirectory']}{os.sep}{out['results_zip']}", 'zip', cache['log_dir'])
     return out
@@ -175,9 +177,12 @@ if __name__ == "__main__":
         We also handle train/validation/test stages of local sites by sending corresponding signals from here
         """
         nxt_phase = 'computation'
-        if check(any, 'mode', 'train', input) or check(all, 'mode', 'val_waiting', input):
+        out['global_modes'] = set_mode(input)
+        if check(all, 'grads_file', 'grads.npy', input):
             out.update(**aggregate_sites_info(input))
-            out['global_modes'] = set_mode(input)
+
+        if check(all, 'mode', 'val_waiting', input):
+            out['global_modes'] = set_mode(input, mode='validation')
 
         if check(all, 'mode', 'train_waiting', input):
             out.update(**on_epoch_end(cache, input))
