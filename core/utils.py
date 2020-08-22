@@ -189,3 +189,12 @@ def get_cuda_device(cache, state):
         else:
             raise Exception(f'*** GPU not detected in {state["clientId"]}. ***')
     return device
+
+
+def get_safe_batch_size(batch_size, dataset_len):
+    if dataset_len % batch_size == 0:
+        return batch_size
+    for i in range(batch_size, 0, -1):
+        if dataset_len % i > 1:
+            return i
+    return dataset_len

@@ -127,7 +127,8 @@ def evaluation(cache, state, split_key, nn, dataset_cls, save_preds=None):
         eval_dataset = dataset_cls(cache=cache, state=state, mode=split_key)
         split = json.loads(split_file.read())
         eval_dataset.load_indices(files=split[split_key])
-        eval_dataloader = eval_dataset.loader(shuffle=False, batch_size=cache['batch_size'],
+        eval_dataloader = eval_dataset.loader(shuffle=False,
+                                              batch_size=ut.get_safe_batch_size(cache['batch_size'], len(eval_dataset)),
                                               num_workers=cache.get('num_workers', 0),
                                               pin_memory=cache.get('pin_memory', True))
         for batch in eval_dataloader:

@@ -125,6 +125,7 @@ class VBMNet(nn.Module):
             diffa[4]:large.shape[2] - diffb[4]]
         return torch.cat([t, small], 1)
 
+
 # m = VBMNet(in_channels=1, out_channels=2, init_features=8)
 # params_count = sum(p.numel() for p in m.parameters() if p.requires_grad)
 # print(params_count)
