@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import itertools
 import json
 import os
 import shutil
@@ -6,11 +7,9 @@ import sys
 from os import sep
 
 import nibabel as ni
+import numpy as np
 import pandas as pd
 import torch
-import itertools
-import numpy as np
-import random
 
 from core import utils as ut
 from core.nn import train_n_eval, init_dataset
