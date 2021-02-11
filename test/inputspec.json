@@ -28,18 +28,6 @@
     },
     "num_class": {
       "value": 2
-    },
-    "epochs": {
-      "value": 51
-    },
-    "patience": {
-      "value": 11
-    },
-    "batch_size": {
-      "value": 8
-    },
-    "learning_rate": {
-      "value": 0.001
     }
   },
   {
@@ -71,18 +59,6 @@
     },
     "num_class": {
       "value": 2
-    },
-    "epochs": {
-      "value": 51
-    },
-    "patience": {
-      "value": 11
-    },
-    "batch_size": {
-      "value": 8
-    },
-    "learning_rate": {
-      "value": 0.001
     }
   },
   {
@@ -114,18 +90,6 @@
     },
     "num_class": {
       "value": 2
-    },
-    "epochs": {
-      "value": 51
-    },
-    "patience": {
-      "value": 11
-    },
-    "batch_size": {
-      "value": 16
-    },
-    "learning_rate": {
-      "value": 0.001
     }
   },
   {
@@ -157,18 +121,6 @@
     },
     "num_class": {
       "value": 2
-    },
-    "epochs": {
-      "value": 51
-    },
-    "patience": {
-      "value": 11
-    },
-    "batch_size": {
-      "value": 8
-    },
-    "learning_rate": {
-      "value": 0.001
     }
   }
 ]

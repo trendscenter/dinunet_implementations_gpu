@@ -1,8 +1,5 @@
-pydevd-pycharm~=201.8743.11
-numpy~=1.18.4
-pandas~=1.0.3
-matplotlib==3.2.1
-scikit-learn~=0.23.0
+pydevd-pycharm==203.7148.72
+coinstac-dinunet>=0.8
 nibabel~=3.1.0
 -f https://download.pytorch.org/whl/torch_stable.html
 torch==1.6.0+cu92
