@@ -24,8 +24,8 @@ class NiftiDataset(COINNDataset):
         if self.labels.get(site) is None:
             label_dir = self.path(site, 'label_dir')
             labels_file = os.listdir(label_dir)[0]
-            self.labels = pd.read_csv(label_dir + os.sep + labels_file).set_index('niftifile')
-        y = self.labels.loc[file]['isControl']
+            self.labels[site] = pd.read_csv(label_dir + os.sep + labels_file).set_index('niftifile')
+        y = self.labels[site].loc[file]['isControl']
         self.indices.append([site, file, int(y)])
 
     def __getitem__(self, ix):
