@@ -9,6 +9,7 @@ from coinstac_dinunet import COINNDataset, COINNLocal, COINNTrainer
 import torch.nn.functional as F
 import json
 from models import VBMNet
+import torchio as tio
 
 
 # import pydevd_pycharm
@@ -19,6 +20,7 @@ class NiftiDataset(COINNDataset):
     def __init__(self, **kw):
         super().__init__(**kw)
         self.labels = {}
+        self.transform = tio.Compose([tio.RandomFlip(axes=(0, 1, 2))])
 
     def load_index(self, site, file):
         if self.labels.get(site) is None:
@@ -31,9 +33,11 @@ class NiftiDataset(COINNDataset):
     def __getitem__(self, ix):
         site, file, y = self.indices[ix]
         data_dir = self.path(site, 'data_dir')
-        nif = np.array(ni.load(data_dir + os.sep + file).dataobj)
-        nif[nif < 0.05] = 0
-        return {'inputs': torch.tensor(nif.copy()[None, :]), 'labels': torch.tensor(y), 'ix': torch.tensor(ix)}
+        nif = np.array(ni.load(data_dir + os.sep + file).dataobj)[None, :]
+        if self.mode == 'train':
+            nif = self.transform(nif)
+        # nif[nif < 0.05] = 0
+        return {'inputs': torch.tensor(nif.copy()), 'labels': torch.tensor(y), 'ix': torch.tensor(ix)}
 
 
 class NiftiTrainer(COINNTrainer):
@@ -42,7 +46,7 @@ class NiftiTrainer(COINNTrainer):
 
     def _init_nn_model(self):
         self.nn['net'] = VBMNet(num_channels=self.cache['input_ch'],
-                                num_classes=self.cache['num_class'],  reduce_by=64)
+                                num_classes=self.cache['num_class'], b_mul=4)
 
     def iteration(self, batch):
         inputs, labels = batch['inputs'].to(self.device['gpu']).float(), batch['labels'].to(self.device['gpu']).long()
@@ -70,7 +74,7 @@ class NiftiTrainer(COINNTrainer):
 if __name__ == "__main__":
     args = json.loads(sys.stdin.read())
     local = COINNLocal(cache=args['cache'], input=args['input'],
-                       state=args['state'], epochs=111, patience=21, gpus=[],
+                       state=args['state'], epochs=111, patience=21,
                        pretrain_epochs=21, computation_id='fsv_volumes_pretrained')
     local.compute(NiftiDataset, NiftiTrainer)
     local.send()
