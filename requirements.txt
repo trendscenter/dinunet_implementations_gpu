@@ -5,3 +5,4 @@ nibabel~=3.1.0
 torch==1.6.0+cu92
 -f https://download.pytorch.org/whl/torch_stable.html
 torchvision==0.7.0+cu92
+torchio==0.18.29

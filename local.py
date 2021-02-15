@@ -74,7 +74,7 @@ class NiftiTrainer(COINNTrainer):
 if __name__ == "__main__":
     args = json.loads(sys.stdin.read())
     local = COINNLocal(cache=args['cache'], input=args['input'],
-                       state=args['state'], epochs=111, patience=21,
-                       pretrain_epochs=21, computation_id='fsv_volumes_pretrained')
+                       state=args['state'], epochs=251, patience=31, learning_rate=0.0002,
+                       gpus=[0, 1], batch_size=4, local_iterations=4, computation_id='vbm_3d')
     local.compute(NiftiDataset, NiftiTrainer)
     local.send()

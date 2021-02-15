@@ -17,9 +17,6 @@
         0
       ]
     },
-    "id": {
-      "value": "vbm"
-    },
     "num_folds": {
       "value": 10
     },
@@ -47,9 +44,6 @@
       "value": [
         0
       ]
-    },
-    "id": {
-      "value": "vbm"
     },
     "num_folds": {
       "value": 10
@@ -79,9 +73,6 @@
         1
       ]
     },
-    "id": {
-      "value": "vbm"
-    },
     "num_folds": {
       "value": 10
     },
@@ -109,9 +100,6 @@
       "value": [
         1
       ]
-    },
-    "id": {
-      "value": "vbm"
     },
     "num_folds": {
       "value": 10
