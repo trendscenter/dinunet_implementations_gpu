@@ -5,11 +5,13 @@ import torch
 import numpy as np
 import pandas as pd
 import nibabel as ni
-from coinstac_dinunet import COINNDataset, COINNLocal, COINNTrainer
+from coinstac_dinunet import COINNDataset, COINNLocal, COINNTrainer, COINNDataLoader
+from coinstac_dinunet.metrics import Prf1a
 import torch.nn.functional as F
 import json
 from models import VBMNet
 import torchio as tio
+import coinstac_dinunet.utils.tensorutils as tu
 
 
 # import pydevd_pycharm
@@ -70,11 +72,15 @@ class NiftiTrainer(COINNTrainer):
     def _set_log_headers(self):
         self.cache['log_header'] = 'loss,accuracy,f1'
 
+    def new_metrics(self):
+        return Prf1a()
+
 
 if __name__ == "__main__":
     args = json.loads(sys.stdin.read())
     local = COINNLocal(cache=args['cache'], input=args['input'],
-                       state=args['state'], epochs=251, patience=31, learning_rate=0.0002,
-                       gpus=[0, 1], batch_size=4, local_iterations=4, computation_id='vbm_3d')
+                       state=args['state'], epochs=251, patience=21, learning_rate=0.0002,
+                       gpus=[0, 1], batch_size=4, computation_id='vbm_3d',
+                       pretrain_epochs=21, validation_epochs=2)
     local.compute(NiftiDataset, NiftiTrainer)
     local.send()
