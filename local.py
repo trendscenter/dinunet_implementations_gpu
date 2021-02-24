@@ -39,7 +39,7 @@ class NiftiDataset(COINNDataset):
         if self.mode == 'train':
             nif = self.transform(nif)
         # nif[nif < 0.05] = 0
-        return {'inputs': torch.tensor(nif.copy()), 'labels': torch.tensor(y), 'ix': torch.tensor(ix)}
+        return {'inputs': nif.copy(), 'labels': y, 'ix': ix}
 
 
 class NiftiTrainer(COINNTrainer):
@@ -70,7 +70,7 @@ class NiftiTrainer(COINNTrainer):
         self.cache['monitor_metric'] = 'f1', 'maximize'
 
     def _set_log_headers(self):
-        self.cache['log_header'] = 'loss,accuracy,f1'
+        self.cache['log_header'] = 'loss|accuracy,f1'
 
     def new_metrics(self):
         return Prf1a()
@@ -78,9 +78,10 @@ class NiftiTrainer(COINNTrainer):
 
 if __name__ == "__main__":
     args = json.loads(sys.stdin.read())
-    local = COINNLocal(cache=args['cache'], input=args['input'],
-                       state=args['state'], epochs=251, patience=21, learning_rate=0.0002,
-                       gpus=[0, 1], batch_size=4, computation_id='vbm_3d',
-                       pretrain_epochs=21, validation_epochs=2)
+
+    pretrain_args = {'epochs': 71, 'gpus': [0, 1], 'batch_size': 16}
+    local = COINNLocal(cache=args['cache'], input=args['input'], pretrain_args=pretrain_args,
+                       state=args['state'], epochs=251, patience=21, learning_rate=0.001,
+                       batch_size=8, computation_id='vbm_3d', local_iterations=1, num_workers=0)
     local.compute(NiftiDataset, NiftiTrainer)
     local.send()
