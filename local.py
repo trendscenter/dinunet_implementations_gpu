@@ -1,17 +1,19 @@
 #!/usr/bin/python
-import sys
+import json
 import os
-import torch
+import sys
+
+import nibabel as ni
 import numpy as np
 import pandas as pd
-import nibabel as ni
-from coinstac_dinunet import COINNDataset, COINNLocal, COINNTrainer, COINNDataLoader
-from coinstac_dinunet.metrics import Prf1a
+import torch
 import torch.nn.functional as F
-import json
-from models import VBMNet
 import torchio as tio
-import coinstac_dinunet.utils.tensorutils as tu
+from coinstac_dinunet import COINNDataset, COINNLocal, COINNTrainer
+from coinstac_dinunet.metrics import Prf1a
+from coinstac_dinunet.io import RECV
+
+from models import VBMNet
 
 
 # import pydevd_pycharm
@@ -30,15 +32,22 @@ class NiftiDataset(COINNDataset):
             labels_file = os.listdir(label_dir)[0]
             self.labels[site] = pd.read_csv(label_dir + os.sep + labels_file).set_index('niftifile')
         y = self.labels[site].loc[file]['isControl']
-        self.indices.append([site, file, int(y)])
+        self.indices.append([site, file, int(1 - y)])
 
     def __getitem__(self, ix):
         site, file, y = self.indices[ix]
         data_dir = self.path(site, 'data_dir')
-        nif = np.array(ni.load(data_dir + os.sep + file).dataobj)[None, :]
+        nif = np.array(ni.load(data_dir + os.sep + file).dataobj)
+        nif[nif < 0.05] = 0
+
+        # mean = np.load(self.state[site]['baseDirectory'] + os.sep + f"{site}_mean.npy")
+        # std = np.load(self.state[site]['baseDirectory'] + os.sep + f"{site}_std.npy")
+        # std[nif == 0] = 1
+        # nif = (nif - mean) / std
+
+        nif = nif[None, :]
         if self.mode == 'train':
             nif = self.transform(nif)
-        # nif[nif < 0.05] = 0
         return {'inputs': nif.copy(), 'labels': y, 'ix': ix}
 
 
@@ -48,7 +57,7 @@ class NiftiTrainer(COINNTrainer):
 
     def _init_nn_model(self):
         self.nn['net'] = VBMNet(num_channels=self.cache['input_ch'],
-                                num_classes=self.cache['num_class'], b_mul=4)
+                                num_classes=self.cache['num_class'], b_mul=self.cache['model_scale'])
 
     def iteration(self, batch):
         inputs, labels = batch['inputs'].to(self.device['gpu']).float(), batch['labels'].to(self.device['gpu']).long()
@@ -77,11 +86,13 @@ class NiftiTrainer(COINNTrainer):
 
 
 if __name__ == "__main__":
-    args = json.loads(sys.stdin.read())
-
-    pretrain_args = {'epochs': 71, 'gpus': [0, 1], 'batch_size': 16}
-    local = COINNLocal(cache=args['cache'], input=args['input'], pretrain_args=pretrain_args,
-                       state=args['state'], epochs=251, patience=21, learning_rate=0.001,
-                       batch_size=8, computation_id='vbm_3d', local_iterations=1, num_workers=0)
+    pretrain_args = {'epochs': 51, 'gpus': [0, 1], 'batch_size': 18, 'learning_rate': 0.001,
+                     'num_workers': 0, 'pin_memory': False}
+    local = COINNLocal(cache=RECV['cache'], input=RECV['input'], pretrain_args=None,
+                       state=RECV['state'], epochs=151, patience=21, learning_rate=0.001,
+                       batch_size=6, computation_id='vbm_3d_age_classification_frm_scratch',
+                       model_scale=2,
+                       pin_memory=False,
+                       num_workers=4)
     local.compute(NiftiDataset, NiftiTrainer)
     local.send()

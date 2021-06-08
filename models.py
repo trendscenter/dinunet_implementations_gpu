@@ -25,18 +25,24 @@ class VBMNet(nn.Module):
             DownBlock(num_channels, int(4 * b_mul)),
             DownBlock(int(4 * b_mul), int(8 * b_mul)),
             DownBlock(int(8 * b_mul), int(16 * b_mul)),
-            DownBlock(int(16 * b_mul), int(32 * b_mul)),
-            DownBlock(int(32 * b_mul), int(32 * b_mul))
+            DownBlock(int(16 * b_mul), int(24 * b_mul)),
+            DownBlock(int(24 * b_mul), int(32 * b_mul)),
         )
 
         self.classifier = nn.Sequential(
-            nn.Linear(int(32 * b_mul) * 3 * 4 * 3, 1024),
+            nn.Linear(int(32 * b_mul) * 3 * 4 * 3, 512),
+            nn.BatchNorm1d(512, track_running_stats=False),
             nn.ReLU(inplace=True),
-            nn.Linear(1024, 512),
-            nn.ReLU(inplace=True),
+
             nn.Linear(512, 256),
+            nn.BatchNorm1d(256, track_running_stats=False),
             nn.ReLU(inplace=True),
-            nn.Linear(256, num_classes),
+
+            nn.Linear(256, 128),
+            nn.BatchNorm1d(128, track_running_stats=False),
+            nn.ReLU(inplace=True),
+
+            nn.Linear(128, num_classes),
         )
 
     def forward(self, x):
@@ -45,9 +51,11 @@ class VBMNet(nn.Module):
         x = self.classifier(x)
         return x
 
-# m = VBMNet(1, 2, b_mul=4)
+
+# m = VBMNet(1, 2, b_mul=2)
+# m.train()
 # params_count = sum(p.numel() for p in m.parameters() if p.requires_grad)
 # print('Params:', params_count)
-# # i = torch.randn((2, 1, 121, 145, 121))
-# # o = m(i)
-# # print("Out shape:", o.shape)
+# i = torch.randn((2, 1, 121, 145, 121))
+# o = m(i)
+# print("Out shape:", o.shape)
