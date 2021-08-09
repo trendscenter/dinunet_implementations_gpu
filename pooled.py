@@ -1,6 +1,6 @@
 from coinstac_dinunet import PooledTrainer
 
-from local import NiftiTrainer, NiftiDataset
+from classification import NiftiTrainer, NiftiDataset
 
 if __name__ == "__main__":
     trainer = PooledTrainer(NiftiTrainer,

@@ -1,7 +1,5 @@
 #!/usr/bin/python
-import json
 import os
-import sys
 
 import nibabel as ni
 import numpy as np
@@ -9,9 +7,8 @@ import pandas as pd
 import torch
 import torch.nn.functional as F
 import torchio as tio
-from coinstac_dinunet import COINNDataset, COINNLocal, COINNTrainer
+from coinstac_dinunet import COINNDataset, COINNTrainer
 from coinstac_dinunet.metrics import Prf1a
-from coinstac_dinunet.io import RECV
 
 from models import VBMNet
 
@@ -83,16 +80,3 @@ class NiftiTrainer(COINNTrainer):
 
     def new_metrics(self):
         return Prf1a()
-
-
-if __name__ == "__main__":
-    pretrain_args = {'epochs': 51, 'gpus': [0, 1], 'batch_size': 18, 'learning_rate': 0.001,
-                     'num_workers': 0, 'pin_memory': False}
-    local = COINNLocal(cache=RECV['cache'], input=RECV['input'], pretrain_args=None,
-                       state=RECV['state'], epochs=151, patience=21, learning_rate=0.001,
-                       batch_size=6, computation_id='vbm_3d_age_classification_frm_scratch',
-                       model_scale=2,
-                       pin_memory=False,
-                       num_workers=4)
-    local.compute(NiftiDataset, NiftiTrainer)
-    local.send()
