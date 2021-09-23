@@ -155,7 +155,7 @@
         "order": 10
       },
       "gpus": {
-        "default": [],
+        "default": [0],
         "label": "GPU IDs to use. Eg. [0], [0, 1]",
         "type": "object",
         "source": "member",
