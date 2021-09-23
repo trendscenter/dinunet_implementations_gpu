@@ -85,8 +85,7 @@
       "agg_engine": {
         "default": "dSGD",
         "values": [
-          "dSGD",
-          "rankDAD"
+          "dSGD"
         ],
         "label": "Aggregation engine to use",
         "type": "select",
@@ -327,7 +326,7 @@
           "value": "VBM-Classification"
         },
         "group": "Computation params",
-        "order": 27
+        "order": 26
       },
       "num_class": {
         "default": 2,
@@ -335,7 +334,7 @@
         "type": "number",
         "source": "owner",
         "group": "Computation params",
-        "order": 28
+        "order": 27
       },
       "input_channel": {
         "default": 1,
@@ -347,7 +346,7 @@
           "value": "VBM-Classification"
         },
         "group": "Computation params",
-        "order": 29
+        "order": 28
       },
       "labels_column": {
         "default": "isControl",
@@ -355,7 +354,7 @@
         "type": "string",
         "source": "member",
         "group": "Computation params",
-        "order": 30
+        "order": 29
       }
     },
     "output": {
