@@ -1,8 +1,7 @@
-pydevd-pycharm==203.7148.72
-coinstac-dinunet>=1.1.2
+coinstac-dinunet>=1.2.2
+-f https://download.pytorch.org/whl/torch_stable.html
+torch==1.5.1+cu92
+-f https://download.pytorch.org/whl/torch_stable.html
+torchvision==0.6.1+cu92
 nibabel~=3.1.0
--f https://download.pytorch.org/whl/torch_stable.html
-torch==1.6.0+cu92
--f https://download.pytorch.org/whl/torch_stable.html
-torchvision==0.7.0+cu92
 torchio==0.18.29

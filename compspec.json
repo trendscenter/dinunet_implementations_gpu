@@ -1,20 +1,19 @@
 {
   "meta": {
-    "name": "Multi Shot nn VBM 3d images",
-    "id": "vbm",
+    "name": "Decentralized Deep Artificial Neural Networks in COINSTAC (GPU accelerated)",
+    "id": "coinstac-dinunet-gpu",
     "version": "v1.0.0",
-    "repository": "",
-    "description": "...",
-     "compspecVersion": 2
+    "repository": "https:\/\/github.com\/trendscenter\/dinunet_implementations_gpu.git",
+    "description": "NN implementations in COINSTAC with GPU enabled. This only runs on GPU available machines",
+    "compspecVersion": 2
   },
   "computation": {
     "type": "docker",
-    "dockerImage": "vbm",
+    "dockerImage": "coinn-gpu",
     "command": [
-      "python",
-      "\/computation\/local.py"
+      "python"
     ],
-    "dockerOptions": {
+    "containerOptions": {
       "HostConfig": {
         "DeviceRequests": [
           {
@@ -31,25 +30,337 @@
     },
     "remote": {
       "type": "docker",
-      "dockerImage": "vbm",
+      "dockerImage": "coinn-gpu",
       "command": [
-        "python",
-        "\/computation\/remote.py"
-      ],
-      "dockerOptions": {
-        "HostConfig": {
-          "DeviceRequests": [
-            {
-              "Drivers": "nvidia",
-              "Capabilities": [
-                [
-                  "gpu"
-                ]
-              ]
-            }
+        "python"
+      ]
+    },
+    "input": {
+      "covariates": {
+        "order": 1,
+        "label": "Covariates",
+        "type": "array",
+        "items": [
+          "boolean",
+          "number"
+        ]
+      },
+      "data": {
+        "order": 2,
+        "label": "Data",
+        "type": "array",
+        "items": [
+          "FreeSurfer"
+        ],
+        "extensions": [
+          [
+            "csv",
+            "txt"
           ]
-        }
+        ]
+      },
+      "task_id": {
+        "default": "VBM-Classification",
+        "values": [
+          "VBM-Classification"
+        ],
+        "label": "Which task to run?",
+        "type": "select",
+        "source": "owner",
+        "group": "NN Params",
+        "order": 3
+      },
+      "mode": {
+        "default": "train",
+        "values": [
+          "train",
+          "test"
+        ],
+        "label": "NN Mode",
+        "type": "select",
+        "source": "owner",
+        "group": "NN Params",
+        "order": 4
+      },
+      "agg_engine": {
+        "default": "dSGD",
+        "values": [
+          "dSGD",
+          "rankDAD"
+        ],
+        "label": "Aggregation engine to use",
+        "type": "select",
+        "source": "owner",
+        "conditional": {
+          "variable": "mode",
+          "value": "train"
+        },
+        "group": "NN Params",
+        "order": 5
+      },
+      "batch_size": {
+        "default": 16,
+        "label": "Batch size",
+        "type": "number",
+        "source": "member",
+        "group": "NN Params",
+        "order": 6
+      },
+      "local_iterations": {
+        "default": 1,
+        "label": "Number of gradient accumulate iterations(Effective batch size = batch_size * grad_accumulation_iters)",
+        "type": "number",
+        "source": "member",
+        "conditional": {
+          "variable": "mode",
+          "value": "train"
+        },
+        "group": "NN Params",
+        "order": 7
+      },
+      "learning_rate": {
+        "default": 0.001,
+        "label": "Learning rate",
+        "type": "number",
+        "source": "owner",
+        "conditional": {
+          "variable": "mode",
+          "value": "train"
+        },
+        "group": "NN Params",
+        "order": 8
+      },
+      "epochs": {
+        "default": 101,
+        "label": "Epochs",
+        "type": "number",
+        "source": "owner",
+        "conditional": {
+          "variable": "mode",
+          "value": "train"
+        },
+        "group": "NN Params",
+        "order": 9
+      },
+      "validation_epochs": {
+        "default": 1,
+        "label": "Number of epochs for validation step",
+        "type": "number",
+        "source": "owner",
+        "conditional": {
+          "variable": "mode",
+          "value": "train"
+        },
+        "group": "NN Params",
+        "order": 10
+      },
+      "gpus": {
+        "default": [],
+        "label": "GPU IDs to use. Eg. [0], [0, 1]",
+        "type": "object",
+        "source": "member",
+        "group": "NN Params",
+        "order": 11
+      },
+      "pin_memory": {
+        "default": false,
+        "label": "Pin Memory",
+        "type": "boolean",
+        "source": "member",
+        "group": "NN Params",
+        "order": 12
+      },
+      "num_workers": {
+        "default": 0,
+        "label": "Number of workers",
+        "type": "number",
+        "source": "member",
+        "group": "NN Params",
+        "order": 13
+      },
+      "patience": {
+        "default": 101,
+        "label": "Early stop patience epochs",
+        "type": "number",
+        "source": "owner",
+        "conditional": {
+          "variable": "mode",
+          "value": "train"
+        },
+        "group": "NN Params",
+        "order": 14
+      },
+      "load_lim": {
+        "default": null,
+        "label": "Limit the data to be loaded (Useful for debugging the pipeline with few data)",
+        "type": "number",
+        "source": "owner",
+        "group": "NN Params",
+        "order": 15
+      },
+      "load_sparse": {
+        "default": false,
+        "label": "Load each data item in single dataloader(Useful when working with patches of images like in semantic segmentation.)",
+        "type": "boolean",
+        "source": "owner",
+        "conditional": {
+          "variable": "task_id",
+          "value": "N/A"
+        },
+        "group": "NN Params",
+        "order": 16
+      },
+      "pretrain": {
+        "default": false,
+        "label": "Use the site with MAX amount of data to pre-train locally and begin distributed training from there.",
+        "type": "boolean",
+        "source": "owner",
+        "group": "NN Params",
+        "order": 17
+      },
+      "pretrain_args": {
+        "default": {
+          "epochs": 51,
+          "learning_rate": 0.001,
+          "batch_size": 16,
+          "gpus": [],
+          "local_iterations": 1,
+          "validation_epochs": 1,
+          "pin_memory": false,
+          "num_workers": 0,
+          "patience": 51
+        },
+        "label": "Pretrain arguments (Will override the main arguments above)",
+        "type": "object",
+        "source": "member",
+        "conditional": {
+          "variable": "pretrain",
+          "value": true
+        },
+        "group": "NN Params",
+        "order": 18
+      },
+      "dataloader_args": {
+        "default": {
+          "train": {"drop_last": true},
+          "validation": {"drop_last": false},
+          "test": {"drop_last": false}
+        },
+        "label": "Dataloader arguments (Will override the main arguments above)",
+        "type": "object",
+        "source": "member",
+        "group": "NN Params",
+        "order": 19
+      },
+      "split_ratio": {
+        "default": [
+          0.7,
+          0.15,
+          0.15
+        ],
+        "label": "Data split ratio for train, validation, and/or test. Eg. [0.6, 0.2, 0.2], [0.8, 0.2], or [1](Default keys- train, validation, and test will be used from left to right)",
+        "type": "object",
+        "source": "owner",
+        "group": "Pick one",
+        "order": 20
+      },
+      "num_folds": {
+        "default": null,
+        "label": "K-Fold Cross Validation, K? (Mutually exclusive with data split ratio)",
+        "type": "number",
+        "source": "owner",
+        "group": "Pick one",
+        "order": 21
+      },
+      "monitor_metric": {
+        "default": "f1",
+        "label": "Metric to monitor for model selection.",
+        "type": "select",
+        "values": ["f1", "accuracy", "precision", "recall", "overlap", "average", "time"],
+        "source": "owner",
+        "conditional": {
+          "variable": "mode",
+          "value": "train"
+        },
+        "group": "NN Params",
+        "order": 22
+      },
+      "metric_direction": {
+        "default": "maximize",
+        "label": "Metric direction of improvement.",
+        "type": "select",
+        "values": ["maximize", "minimize"],
+        "source": "owner",
+        "conditional": {
+          "variable": "mode",
+          "value": "train"
+        },
+        "group": "NN Params",
+        "order": 23
+      },
+      "log_header": {
+        "default": "Loss|F1",
+        "label": "Plots to be generated. Separate plot will be created for items separated by pipe (|).",
+        "type": "string",
+        "source": "owner",
+        "group": "NN Params",
+        "order": 24
+      },
+      "input_size": {
+        "default": 66,
+        "label": "Num of dependent variables",
+        "type": "number",
+        "source": "owner",
+        "conditional": {
+          "variable": "task_id"
+        },
+        "group": "Computation params",
+        "order": 25
+      },
+      "model_scale": {
+        "default": 1,
+        "label": "Scale factor for NN model.",
+        "type": "number",
+        "source": "owner",
+        "conditional": {
+          "variable": "task_id",
+          "value": "VBM-Classification"
+        },
+        "group": "Computation params",
+        "order": 27
+      },
+      "num_class": {
+        "default": 2,
+        "label": "Number of classes",
+        "type": "number",
+        "source": "owner",
+        "group": "Computation params",
+        "order": 28
+      },
+      "input_channel": {
+        "default": 1,
+        "label": "Number of input channels",
+        "type": "number",
+        "source": "owner",
+        "conditional": {
+          "variable": "task_id",
+          "value": "VBM-Classification"
+        },
+        "group": "Computation params",
+        "order": 29
+      },
+      "labels_column": {
+        "default": "isControl",
+        "label": "Column name to be used as label",
+        "type": "string",
+        "source": "member",
+        "group": "Computation params",
+        "order": 30
       }
-    }
+    },
+    "output": {
+    },
+    "display": [
+    ]
   }
 }

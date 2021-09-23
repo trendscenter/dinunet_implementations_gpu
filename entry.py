@@ -1,39 +1,34 @@
-#!/usr/bin/python
-
 from coinstac_dinunet import COINNLocal, COINNRemote
 from coinstac_dinunet.io import COINPyService
-from coinstac_dinunet.metrics import Prf1a
 
-from classification import NiftiDataset, NiftiTrainer
+from nn_implementations.vbm import VBMDataset, VBMTrainer, VBMDataHandle
 
+TASK_VBM = "VBM-Classification"
 
-class VBMRemote(COINNRemote):
-    def _set_monitor_metric(self):
-        self.cache['monitor_metric'] = 'f1', 'maximize'
-
-    def _set_log_headers(self):
-        self.cache['log_header'] = 'Loss|Accuracy,F1'
-
-    def _new_metrics(self):
-        return Prf1a()
+""" Test """
+task = TASK_VBM
+agg_engine = 'dSGD'
 
 
 class Server(COINPyService):
-
     def get_local(self, msg) -> callable:
-        pretrain_args = {'epochs': 51, 'batch_size': 16}
-        local = COINNLocal(cache=self.cache, input=msg['data']['input'],
-                           pretrain_args=None, batch_size=8, model_scale=4,
-                           state=msg['data']['state'], epochs=21, patience=21, computation_id='vbm_quick')
-        return local
+        pretrain_args = {'epochs': 21, 'batch_size': 16}
+        dataloader_args = {"train": {"drop_last": True}}
+        local = COINNLocal(task_id=task,
+                           cache=self.cache, input=msg['data']['input'], batch_size=16,
+                           state=msg['data']['state'], epochs=51, patience=21, model_scale=1,
+                           pretrain_args=pretrain_args,
+                           dataloader_args=dataloader_args, agg_engine=agg_engine)
+
+        if local.cache['task_id'] == TASK_VBM:
+            return local, VBMTrainer, VBMDataset, VBMDataHandle
 
     def get_remote(self, msg) -> callable:
-        remote = VBMRemote(cache=self.cache, input=msg['data']['input'],
-                           state=msg['data']['state'])
-        return remote
+        remote = COINNRemote(cache=self.cache, input=msg['data']['input'],
+                             state=msg['data']['state'])
 
-    def get_local_compute_args(self, msg) -> list:
-        return [NiftiTrainer, NiftiDataset]
+        if remote.cache['task_id'] == TASK_VBM:
+            return remote, VBMTrainer
 
 
 server = Server(verbose=False)

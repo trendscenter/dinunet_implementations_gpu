@@ -1,9 +1,0 @@
-file,true_label,prediction,probability
-M87105785_swc1Re_t1avg.nii,1,1,0.634
-M87111447_swc1Re_t1avg.nii,0,1,0.52
-M87150544_swc1Re_t1avg.nii,1,0,0.38
-M87106979_swc1Re_t1avg.nii,0,0,0.412
-M87101037_swc1Re_t1avg.nii,1,1,0.883
-M87115626_swc1Re_t1avg.nii,0,0,0.415
-M87138525_swc1Re_t1avg.nii,1,1,0.571
-M87107042_swc1Re_t1avg.nii,0,0,0.329
