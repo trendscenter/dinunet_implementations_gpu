@@ -2,6 +2,1042 @@
   {
     "covariates": {
       "value": {
+        "M02108714_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "28",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02110676_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "39",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02111314_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "23",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02114646_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "20",
+          "sex": "F",
+          "site": "HGM"
+        },
+        "M02116465_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "41",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02117104_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "26",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02118061_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "35",
+          "sex": "F",
+          "site": "HGM"
+        },
+        "M02118991_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "41",
+          "sex": "F",
+          "site": "HGM"
+        },
+        "M02121604_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "47",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02123961_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "55",
+          "sex": "F",
+          "site": "HGM"
+        },
+        "M02130172_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "41",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02135823_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "45",
+          "sex": "F",
+          "site": "HGM"
+        },
+        "M02138557_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "46",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02139161_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "35",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02142419_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "50",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02142731_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "25",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02145525_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "44",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02150611_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "50",
+          "sex": "F",
+          "site": "HGM"
+        },
+        "M02151104_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "34",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02152570_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "46",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02155567_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "21",
+          "sex": "F",
+          "site": "HGM"
+        },
+        "M02156480_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "27",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02159197_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "48",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02161598_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "39",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02165589_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "39",
+          "sex": "F",
+          "site": "HGM"
+        },
+        "M02169127_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "34",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02169291_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "42",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02179730_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "20",
+          "sex": "F",
+          "site": "HGM"
+        },
+        "M02185114_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "49",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02185230_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "45",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02189203_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "37",
+          "sex": "F",
+          "site": "HGM"
+        },
+        "M02192612_swc1t1avg.nii": {
+          "isControl": "TRUE",
+          "age": "22",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02101222_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "46",
+          "sex": "F",
+          "site": "HGM"
+        },
+        "M02103447_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "50",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02104909_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "35",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02108122_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "50",
+          "sex": "F",
+          "site": "HGM"
+        },
+        "M02109398_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "22",
+          "sex": "F",
+          "site": "HGM"
+        },
+        "M02129646_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "46",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02130199_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "25",
+          "sex": "F",
+          "site": "HGM"
+        },
+        "M02131528_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "47",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02131846_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "46",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02133511_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "37",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02134188_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "23",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02140820_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "46",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02143619_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "41",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02156892_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "43",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02163934_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "39",
+          "sex": "F",
+          "site": "HGM"
+        },
+        "M02169019_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "43",
+          "sex": "F",
+          "site": "HGM"
+        },
+        "M02172088_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "20",
+          "sex": "F",
+          "site": "HGM"
+        },
+        "M02172709_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "36",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02173778_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "46",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02181525_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "41",
+          "sex": "M",
+          "site": "HGM"
+        },
+        "M02189654_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "44",
+          "sex": "F",
+          "site": "HGM"
+        },
+        "M02192461_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "40",
+          "sex": "F",
+          "site": "HGM"
+        },
+        "M02196211_swc1t1avg.nii": {
+          "isControl": "FALSE",
+          "age": "44",
+          "sex": "M",
+          "site": "HGM"
+        }
+      }
+    },
+    "labels_column": {
+      "value": "isControl"
+    },
+    "num_folds": {
+      "value": 10
+    },
+    "mode": {
+      "value": "train"
+    },
+    "gpus": {
+      "value": [
+        0
+      ]
+    },
+    "input_channel": {
+      "value": 1
+    },
+    "num_class": {
+      "value": 2
+    },
+    "num_workers": {
+      "value": 0
+    },
+    "learning_rate": {
+      "value": 0.001
+    }
+  },
+  {
+    "covariates": {
+      "value": {
+        "M52202247_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "42",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52210595_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "35",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52211863_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "26",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52213700_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "34",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52218654_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "29",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52221846_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "35",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52227822_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "23",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52231903_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "34",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52233572_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "22",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52234634_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "27",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52237505_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "43",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52237800_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "29",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52243873_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "33",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52247314_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "22",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52254956_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "36",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52255065_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "53",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52256171_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "28",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52257066_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "31",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52257937_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "26",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52258340_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "39",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52258644_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "24",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52259932_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "59",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52262614_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "44",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52269106_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "42",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52269291_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "19",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52269417_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "33",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52271063_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "41",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52271453_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "26",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52273169_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "30",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52274982_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "24",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52280294_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "19",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52280345_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "24",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52286167_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "23",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52289199_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "34",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52290120_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "39",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52291410_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "19",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52293397_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "48",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52295595_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "24",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52296423_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "22",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52297499_swc1t1_brain.nii": {
+          "isControl": "TRUE",
+          "age": "24",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52200270_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "25",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52200803_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "26",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52201932_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "44",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52202304_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "37",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52203447_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "20",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52203703_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "54",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52204446_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "24",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52205070_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "40",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52210421_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "23",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52211523_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "49",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52214646_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "20",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52214732_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "25",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52214777_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "31",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52215103_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "29",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52215593_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "42",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52215821_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "29",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52216465_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "22",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52216899_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "27",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52217742_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "27",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52217983_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "39",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52218455_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "30",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52222147_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "30",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52223206_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "27",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52226211_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "20",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52226657_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "28",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52228187_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "25",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52228456_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "20",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52229861_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "47",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52233758_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "20",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52234303_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "43",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52235786_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "25",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52237173_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "42",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52238988_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "40",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52239358_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "33",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52241218_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "23",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52243274_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "22",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52243619_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "25",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52244480_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "33",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52245372_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "22",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52246449_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "28",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52246798_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "21",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52251809_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "57",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52252370_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "28",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52254014_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "19",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52254382_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "46",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52256830_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "20",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52260735_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "28",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52261564_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "27",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52269912_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "21",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52270333_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "20",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52271576_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "22",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52273647_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "21",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52273934_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "43",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52279187_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "24",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52279914_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "46",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52281229_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "42",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52282243_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "24",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52282305_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "27",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52284000_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "27",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52285768_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "19",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52288332_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "24",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52289654_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "28",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52289720_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "37",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52296258_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "23",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52297972_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "44",
+          "sex": "F",
+          "site": "MGH"
+        },
+        "M52298177_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "23",
+          "sex": "M",
+          "site": "MGH"
+        },
+        "M52299968_swc1t1_brain.nii": {
+          "isControl": "FALSE",
+          "age": "33",
+          "sex": "M",
+          "site": "MGH"
+        }
+      }
+    },
+    "labels_column": {
+      "value": "isControl"
+    },
+    "num_folds": {
+      "value": 10
+    },
+    "mode": {
+      "value": "train"
+    },
+    "gpus": {
+      "value": [
+        1
+      ]
+    },
+    "input_channel": {
+      "value": 1
+    },
+    "num_class": {
+      "value": 2
+    },
+    "num_workers": {
+      "value": 0
+    },
+    "learning_rate": {
+      "value": 0.001
+    }
+  },
+  {
+    "covariates": {
+      "value": {
         "M55406768_swc1t1r1_brain.nii": {
           "isControl": "TRUE",
           "age": "35",
