@@ -227,7 +227,7 @@
       },
       "pretrain_args": {
         "default": {
-          "epochs": 51,
+          "epochs": 0,
           "learning_rate": 0.001,
           "batch_size": 16,
           "gpus": [0],
