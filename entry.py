@@ -17,7 +17,7 @@ class Server(COINPyService):
         local = COINNLocal(task_id=task,
                            cache=self.cache, input=msg['data']['input'], batch_size=16,
                            state=msg['data']['state'], epochs=51, patience=21, model_scale=1,
-                           pretrain_args=pretrain_args,
+                           pretrain_args=None,
                            dataloader_args=dataloader_args, agg_engine=agg_engine)
 
         if local.cache['task_id'] == TASK_VBM:
