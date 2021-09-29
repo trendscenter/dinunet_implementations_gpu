@@ -230,7 +230,7 @@
           "epochs": 51,
           "learning_rate": 0.001,
           "batch_size": 16,
-          "gpus": [],
+          "gpus": [0],
           "local_iterations": 1,
           "validation_epochs": 1,
           "pin_memory": false,
