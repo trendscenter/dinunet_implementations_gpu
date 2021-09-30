@@ -9,7 +9,7 @@
   },
   "computation": {
     "type": "docker",
-    "dockerImage": "coinn-gpu",
+    "dockerImage": "nn-gpu",
     "command": [
       "python"
     ],
@@ -30,7 +30,7 @@
     },
     "remote": {
       "type": "docker",
-      "dockerImage": "coinn-gpu",
+      "dockerImage": "nn-gpu",
       "command": [
         "python"
       ]
