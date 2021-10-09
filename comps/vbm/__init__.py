@@ -55,7 +55,7 @@ class VBMTrainer(COINNTrainer):
 
     def _init_nn_model(self):
         self.nn['net'] = VBMNet(num_channels=self.cache['input_channel'],
-                                num_classes=self.cache['num_class'], b_mul=self.cache['model_scale'])
+                                num_classes=self.cache['num_class'], b_mul=self.cache.get('model_scale', 1))
 
     def iteration(self, batch):
         inputs, labels = batch['inputs'].to(self.device['gpu']).float(), batch['labels'].to(self.device['gpu']).long()

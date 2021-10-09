@@ -261,9 +261,9 @@
       },
       "split_ratio": {
         "default": [
-          0.7,
-          0.15,
-          0.15
+          0.8,
+          0.1,
+          0.1
         ],
         "label": "Data split ratio for train, validation, and/or test. Eg. [0.6, 0.2, 0.2], [0.8, 0.2], or [1](Default keys- train, validation, and test will be used from left to right)",
         "type": "object",
@@ -312,17 +312,6 @@
         "source": "owner",
         "group": "NN Params",
         "order": 25
-      },
-      "input_size": {
-        "default": 66,
-        "label": "Num of dependent variables",
-        "type": "number",
-        "source": "owner",
-        "conditional": {
-          "variable": "task_id"
-        },
-        "group": "Computation params",
-        "order": 26
       },
       "model_scale": {
         "default": 1,

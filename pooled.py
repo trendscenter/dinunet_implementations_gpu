@@ -1,6 +1,6 @@
 from coinstac_dinunet import PooledTrainer
 
-from nn_implementations.vbm import VBMTrainer, VBMDataset
+from comps.vbm import VBMTrainer, VBMDataset
 
 if __name__ == "__main__":
     trainer = PooledTrainer(VBMTrainer,
