@@ -1,26 +1,27 @@
 import multiprocessing as mp
 import time
 
-import coinstac
 from coinstac_dinunet import COINNRemote
 from coinstac_dinunet.utils import duration
 
 from comps import NNComputation, VBMTrainer
 
-_cache = {}
-_pool = None
+CACHE = {}
+MP_POOL = None
 
 
 def run(data):
-    global _pool
-    global _cache
+    global CACHE
+    global MP_POOL
 
-    start_time = _cache.setdefault('start_time', time.time())
-    if _pool is None:
-        _pool = mp.Pool(processes=data['input'].get('num_reducers', 2))
+    _start = time.time()
+    start_time = CACHE.setdefault('start_time', _start)
+
+    if MP_POOL is None:
+        MP_POOL = mp.Pool(processes=data['input'].get('num_reducers', 2))
 
     remote = COINNRemote(
-        cache=_cache, input=data['input'], state=data['state']
+        cache=CACHE, input=data['input'], state=data['state']
     )
 
     """Add new NN computation Here"""
@@ -29,9 +30,8 @@ def run(data):
     else:
         raise ValueError(f"Invalid remote task:{remote.cache.get('task')}")
 
-    out = remote(_pool, *args)
+    out = remote(MP_POOL, *args)
 
-    _cache['total_remote_comp_duration'] = coinstac.compTime
-    _cache['total_duration'] = f"{duration(start_time)}"
-
+    duration(CACHE, _start, key='time_spent_on_computation')
+    duration(CACHE, start_time, key='total_duration')
     return out
