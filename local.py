@@ -8,7 +8,7 @@ from comps import AggEngine
 from comps import NNComputation, VBMTrainer, VBMDataset, VBMDataHandle
 
 """ Test """
-computation = NNComputation.TASK_FREE_SURFER
+computation = NNComputation.TASK_VBM
 agg_engine = AggEngine.DECENTRALIZED_SGD
 
 CACHE = {}
