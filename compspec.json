@@ -4,12 +4,12 @@
     "id": "coinstac-dinunet-gpu",
     "version": "v1.0.0",
     "repository": "https:\/\/github.com\/trendscenter\/dinunet_implementations_gpu.git",
-    "description": "NN implementations in COINSTAC with GPU enabled. This only runs on GPU available machines",
+    "description": "GPU enabled NN implementations in COINSTAC with. This only runs on GPU available machines.",
     "compspecVersion": 2
   },
   "computation": {
     "type": "docker",
-    "dockerImage": "nn-gpu",
+    "dockerImage": "coinstacteam/coinstac-dinunet-gpu",
     "command": [
       "python"
     ],
@@ -25,12 +25,12 @@
             ]
           }
         ],
-        "ShmSize": 2147483648
+        "ShmSize": 8589934592
       }
     },
     "remote": {
       "type": "docker",
-      "dockerImage": "nn-gpu",
+      "dockerImage": "coinstacteam/coinstac-dinunet-gpu",
       "command": [
         "python"
       ]
@@ -48,20 +48,21 @@
       },
       "data": {
         "label": "Data",
-        "type": "vbm",
+        "type": "freesurfer",
         "items": [
-          "VBM"
+          "FreeSurfer"
         ],
         "extensions": [
           "csv",
-          "nii"
+          "txt"
         ],
         "source": "owner",
         "order": 2
       },
       "task_id": {
-        "default": "VBM-Classification",
+        "default": "FS-Classification",
         "values": [
+          "FS-Classification",
           "VBM-Classification"
         ],
         "label": "Which task to run?",
@@ -85,7 +86,8 @@
       "agg_engine": {
         "default": "dSGD",
         "values": [
-          "dSGD"
+          "dSGD",
+          "rankDAD"
         ],
         "label": "Aggregation engine to use",
         "type": "select",
@@ -345,6 +347,35 @@
         },
         "group": "Computation params",
         "order": 27
+      },
+      "hidden_sizes": {
+        "default": [
+          256,
+          128,
+          64,
+          32
+        ],
+        "label": "Size of each inner NN layers (except input and the last layer)",
+        "type": "object",
+        "source": "owner",
+        "conditional": {
+          "variable": "task_id",
+          "value": "FS-Classification"
+        },
+        "group": "Computation params",
+        "order": 25
+      },
+       "input_size": {
+        "default": 66,
+        "label": "Num of dependent variables",
+        "type": "number",
+        "source": "owner",
+        "conditional": {
+          "variable": "task_id",
+          "value": "FS-Classification"
+        },
+        "group": "Computation params",
+        "order": 24
       },
       "num_class": {
         "default": 2,
