@@ -37,27 +37,27 @@
     },
     "input": {
       "covariates": {
-        "order": 1,
         "label": "Covariates",
-        "type": "array",
+        "type": "csv",
         "items": [
           "boolean",
           "number"
-        ]
+        ],
+        "source": "member",
+        "order": 1
       },
       "data": {
-        "order": 2,
         "label": "Data",
-        "type": "array",
+        "type": "vbm",
         "items": [
-          "FreeSurfer"
+          "VBM"
         ],
         "extensions": [
-          [
-            "csv",
-            "txt"
-          ]
-        ]
+          "csv",
+          "nii"
+        ],
+        "source": "owner",
+        "order": 2
       },
       "task_id": {
         "default": "VBM-Classification",
@@ -97,7 +97,7 @@
         "group": "NN Params",
         "order": 5
       },
-       "num_reducers": {
+      "num_reducers": {
         "default": 2,
         "label": "Number of reducers in the aggregator(Depends on number of sites)",
         "type": "number",
@@ -162,7 +162,9 @@
         "order": 11
       },
       "gpus": {
-        "default": [0],
+        "default": [
+          0
+        ],
         "label": "GPU IDs to use. Eg. [0], [0, 1]",
         "type": "object",
         "source": "member",
@@ -230,7 +232,9 @@
           "epochs": 0,
           "learning_rate": 0.001,
           "batch_size": 16,
-          "gpus": [0],
+          "gpus": [
+            0
+          ],
           "local_iterations": 1,
           "validation_epochs": 1,
           "pin_memory": false,
@@ -249,9 +253,15 @@
       },
       "dataloader_args": {
         "default": {
-          "train": {"drop_last": true},
-          "validation": {"drop_last": false},
-          "test": {"drop_last": false}
+          "train": {
+            "drop_last": true
+          },
+          "validation": {
+            "drop_last": false
+          },
+          "test": {
+            "drop_last": false
+          }
         },
         "label": "Dataloader arguments (Will override the main arguments above)",
         "type": "object",
@@ -283,7 +293,15 @@
         "default": "f1",
         "label": "Metric to monitor for model selection.",
         "type": "select",
-        "values": ["f1", "accuracy", "precision", "recall", "overlap", "average", "time"],
+        "values": [
+          "f1",
+          "accuracy",
+          "precision",
+          "recall",
+          "overlap",
+          "average",
+          "time"
+        ],
         "source": "owner",
         "conditional": {
           "variable": "mode",
@@ -296,7 +314,10 @@
         "default": "maximize",
         "label": "Metric direction of improvement.",
         "type": "select",
-        "values": ["maximize", "minimize"],
+        "values": [
+          "maximize",
+          "minimize"
+        ],
         "source": "owner",
         "conditional": {
           "variable": "mode",
@@ -356,7 +377,8 @@
     },
     "output": {
     },
-    "display": [
-    ]
+    "display": {
+      "type": "string"
+    }
   }
 }
