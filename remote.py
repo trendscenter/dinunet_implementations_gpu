@@ -28,8 +28,9 @@ def run(data):
     if remote.cache['task_id'] == NNComputation.TASK_FREESURFER:
         args = FreeSurferTrainer,
 
-    if remote.cache['task_id'] == NNComputation.TASK_VBM:
+    elif remote.cache['task_id'] == NNComputation.TASK_VBM:
         args = VBMTrainer,
+
     else:
         raise ValueError(f"Invalid remote task:{remote.cache.get('task')}")
 
