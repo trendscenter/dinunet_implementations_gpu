@@ -7,7 +7,7 @@ from coinstac_dinunet import COINNDataset, COINNTrainer, COINNDataHandle
 from coinstac_dinunet.data.datautils import init_k_folds
 from coinstac_dinunet.metrics import Prf1a
 
-from .models import MSANNet
+from .models import FSNet
 
 
 class FreeSurferDataset(COINNDataset):
@@ -43,8 +43,8 @@ class FreeSurferTrainer(COINNTrainer):
         super().__init__(**kw)
 
     def _init_nn_model(self):
-        self.nn['fs_net'] = MSANNet(in_size=self.cache['input_size'],
-                                    hidden_sizes=self.cache['hidden_sizes'], out_size=self.cache['num_class'])
+        self.nn['fs_net'] = FSNet(in_size=self.cache['input_size'],
+                                  hidden_sizes=self.cache['hidden_sizes'], out_size=self.cache['num_class'])
 
     def iteration(self, batch):
         inputs, labels = batch['inputs'].to(self.device['gpu']).float(), batch['labels'].to(self.device['gpu']).long()

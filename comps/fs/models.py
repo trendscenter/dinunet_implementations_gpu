@@ -1,9 +1,10 @@
+import torch.nn
 import torch.nn as nn
 
 
-class MSANNet(nn.Module):
+class FSNet(nn.Module):
     def __init__(self, in_size, hidden_sizes, out_size, dropout_in=[]):
-        super(MSANNet, self).__init__()
+        super(FSNet, self).__init__()
         self.in_size = in_size
         self.out_size = out_size
         self.hidden_sizes = hidden_sizes
@@ -29,3 +30,13 @@ class MSANNet(nn.Module):
             x = layer(x)
 
         return self.fc_out(x)
+
+#
+# m = MSANNet(66, [256, 128, 64], 2).to('cuda:0')
+# m = torch.nn.DataParallel(m, device_ids=[0, 1])
+# input = torch.randn(16, 66)
+# labels = torch.randint(0, 2, (16,))
+# out = m(input)
+# loss = ((labels - out) ** 2).sum() / labels.shape[0]
+# loss.backward()
+
