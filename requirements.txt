@@ -1,7 +1,7 @@
 -f https://download.pytorch.org/whl/torch_stable.html
- torch==1.9.1+cpu
+ torch==1.7.1+cu92
 -f https://download.pytorch.org/whl/torch_stable.html
-torchvision==0.10.1+cpu
+torchvision==0.8.2+cu92
 nibabel~=3.1.0
 torchio==0.18.29
 coinstac>=0.2.0
