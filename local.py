@@ -9,7 +9,7 @@ from comps import NNComputation, VBMTrainer, VBMDataset, VBMDataHandle
 from comps import FreeSurferTrainer, FreeSurferDataset, FSVDataHandle
 
 """ Test """
-computation = NNComputation.TASK_VBM
+computation = NNComputation.TASK_FREESURFER
 agg_engine = AggEngine.DECENTRALIZED_SGD
 
 CACHE = {}
@@ -30,7 +30,7 @@ def run(data):
     local = COINNLocal(
         task_id=computation, agg_engine=agg_engine,
         cache=CACHE, input=data['input'], batch_size=16,
-        state=data['state'], epochs=15, patience=11, split_ratio=[0.8, 0.1, 0.1],
+        state=data['state'], epochs=101, patience=101, split_ratio=[0.8, 0.1, 0.1],
         pretrain_args=None, dataloader_args=dataloader_args
     )
 
