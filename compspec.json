@@ -346,7 +346,7 @@
           "value": "VBM-Classification"
         },
         "group": "Computation params",
-        "order": 27
+        "order": 26
       },
       "hidden_sizes": {
         "default": [
@@ -363,7 +363,7 @@
           "value": "FS-Classification"
         },
         "group": "Computation params",
-        "order": 25
+        "order": 27
       },
        "input_size": {
         "default": 66,
@@ -375,7 +375,7 @@
           "value": "FS-Classification"
         },
         "group": "Computation params",
-        "order": 24
+        "order": 28
       },
       "num_class": {
         "default": 2,
@@ -383,7 +383,7 @@
         "type": "number",
         "source": "owner",
         "group": "Computation params",
-        "order": 28
+        "order": 29
       },
       "input_channel": {
         "default": 1,
@@ -395,7 +395,7 @@
           "value": "VBM-Classification"
         },
         "group": "Computation params",
-        "order": 29
+        "order": 30
       },
       "labels_column": {
         "default": "isControl",
@@ -403,7 +403,7 @@
         "type": "string",
         "source": "member",
         "group": "Computation params",
-        "order": 30
+        "order": 31
       }
     },
     "output": {
