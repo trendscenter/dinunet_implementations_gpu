@@ -99,13 +99,49 @@
         "group": "NN Params",
         "order": 5
       },
+      "dad_reduction_rank": {
+        "default": 10,
+        "label": "Rank size for rankDAD engine.",
+        "type": "number",
+        "source": "owner",
+        "conditional": {
+          "variable": "agg_engine",
+          "value": "rankDAD"
+        },
+        "group": "NN Params",
+        "order": 6
+      },
+      "dad_num_pow_iters": {
+        "default": 5,
+        "label": "Number of power iterations for rankDAD engine.",
+        "type": "number",
+        "source": "owner",
+        "conditional": {
+          "variable": "agg_engine",
+          "value": "rankDAD"
+        },
+        "group": "NN Params",
+        "order": 7
+      },
+      "dad_tol": {
+        "default": 0.001,
+        "label": "Tolerance for rankDAD engine.",
+        "type": "number",
+        "source": "owner",
+        "conditional": {
+          "variable": "agg_engine",
+          "value": "rankDAD"
+        },
+        "group": "NN Params",
+        "order": 8
+      },
       "num_reducers": {
         "default": 2,
         "label": "Number of reducers in the aggregator(Depends on number of sites)",
         "type": "number",
         "source": "owner",
         "group": "NN Params",
-        "order": 6
+        "order": 9
       },
       "batch_size": {
         "default": 16,
@@ -113,7 +149,7 @@
         "type": "number",
         "source": "member",
         "group": "NN Params",
-        "order": 7
+        "order": 10
       },
       "local_iterations": {
         "default": 1,
@@ -125,7 +161,7 @@
           "value": "train"
         },
         "group": "NN Params",
-        "order": 8
+        "order": 11
       },
       "learning_rate": {
         "default": 0.001,
@@ -137,7 +173,7 @@
           "value": "train"
         },
         "group": "NN Params",
-        "order": 9
+        "order": 12
       },
       "epochs": {
         "default": 101,
@@ -149,7 +185,7 @@
           "value": "train"
         },
         "group": "NN Params",
-        "order": 10
+        "order": 13
       },
       "validation_epochs": {
         "default": 1,
@@ -161,7 +197,7 @@
           "value": "train"
         },
         "group": "NN Params",
-        "order": 11
+        "order": 14
       },
       "gpus": {
         "default": [
@@ -171,7 +207,7 @@
         "type": "object",
         "source": "member",
         "group": "NN Params",
-        "order": 12
+        "order": 15
       },
       "pin_memory": {
         "default": false,
@@ -179,7 +215,7 @@
         "type": "boolean",
         "source": "member",
         "group": "NN Params",
-        "order": 13
+        "order": 16
       },
       "num_workers": {
         "default": 0,
@@ -187,7 +223,7 @@
         "type": "number",
         "source": "member",
         "group": "NN Params",
-        "order": 14
+        "order": 17
       },
       "patience": {
         "default": 101,
@@ -199,7 +235,7 @@
           "value": "train"
         },
         "group": "NN Params",
-        "order": 15
+        "order": 18
       },
       "load_lim": {
         "default": null,
@@ -207,7 +243,7 @@
         "type": "number",
         "source": "owner",
         "group": "NN Params",
-        "order": 16
+        "order": 19
       },
       "load_sparse": {
         "default": false,
@@ -219,7 +255,7 @@
           "value": "N/A"
         },
         "group": "NN Params",
-        "order": 17
+        "order": 20
       },
       "pretrain": {
         "default": false,
@@ -227,7 +263,7 @@
         "type": "boolean",
         "source": "owner",
         "group": "NN Params",
-        "order": 18
+        "order": 21
       },
       "pretrain_args": {
         "default": {
@@ -251,7 +287,7 @@
           "value": true
         },
         "group": "NN Params",
-        "order": 19
+        "order": 22
       },
       "dataloader_args": {
         "default": {
@@ -269,7 +305,7 @@
         "type": "object",
         "source": "member",
         "group": "NN Params",
-        "order": 20
+        "order": 23
       },
       "split_ratio": {
         "default": [
@@ -281,7 +317,7 @@
         "type": "object",
         "source": "owner",
         "group": "Pick one",
-        "order": 21
+        "order": 24
       },
       "num_folds": {
         "default": null,
@@ -289,7 +325,7 @@
         "type": "number",
         "source": "owner",
         "group": "Pick one",
-        "order": 22
+        "order": 25
       },
       "monitor_metric": {
         "default": "f1",
@@ -310,7 +346,7 @@
           "value": "train"
         },
         "group": "NN Params",
-        "order": 23
+        "order": 26
       },
       "metric_direction": {
         "default": "maximize",
@@ -326,7 +362,7 @@
           "value": "train"
         },
         "group": "NN Params",
-        "order": 24
+        "order": 27
       },
       "log_header": {
         "default": "Loss|F1",
@@ -334,7 +370,7 @@
         "type": "string",
         "source": "owner",
         "group": "NN Params",
-        "order": 25
+        "order": 28
       },
       "model_scale": {
         "default": 1,
@@ -346,7 +382,7 @@
           "value": "VBM-Classification"
         },
         "group": "Computation params",
-        "order": 26
+        "order": 29
       },
       "hidden_sizes": {
         "default": [
@@ -363,7 +399,7 @@
           "value": "FS-Classification"
         },
         "group": "Computation params",
-        "order": 27
+        "order": 30
       },
        "input_size": {
         "default": 66,
@@ -375,7 +411,7 @@
           "value": "FS-Classification"
         },
         "group": "Computation params",
-        "order": 28
+        "order": 31
       },
       "num_class": {
         "default": 2,
@@ -383,7 +419,7 @@
         "type": "number",
         "source": "owner",
         "group": "Computation params",
-        "order": 29
+        "order": 32
       },
       "input_channel": {
         "default": 1,
@@ -395,7 +431,7 @@
           "value": "VBM-Classification"
         },
         "group": "Computation params",
-        "order": 30
+        "order": 33
       },
       "labels_column": {
         "default": "isControl",
@@ -403,7 +439,7 @@
         "type": "string",
         "source": "member",
         "group": "Computation params",
-        "order": 31
+        "order": 34
       }
     },
     "output": {
