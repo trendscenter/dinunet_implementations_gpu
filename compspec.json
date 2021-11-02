@@ -115,6 +115,14 @@
         "group": "NN Params",
         "order": 7
       },
+      "local_iterations": {
+        "default": 1,
+        "label": "Local gradient accumulation iterations(effective batch size = batch size * gradient accumulation iterations)",
+        "type": "number",
+        "source": "member",
+        "group": "NN Params",
+        "order": 8
+      },
       "learning_rate": {
         "default": 0.001,
         "label": "Learning rate:",
@@ -125,7 +133,7 @@
           "value": "train"
         },
         "group": "NN Params",
-        "order": 8
+        "order": 9
       },
       "epochs": {
         "default": 101,
@@ -137,15 +145,15 @@
           "value": "train"
         },
         "group": "NN Params",
-        "order": 9
+        "order": 10
       },
       "pretrain": {
         "default": false,
         "label": "Use the site with maximum data to pre-train locally as starting point:",
         "type": "boolean",
-        "source": "owner",
+        "source": "member",
         "group": "NN Params",
-        "order": 10
+        "order": 11
       },
       "pretrain_args": {
         "default": {
@@ -163,13 +171,13 @@
         },
         "label": "Pretraining arguments:",
         "type": "object",
-        "source": "owner",
+        "source": "member",
         "conditional": {
           "variable": "pretrain",
           "value": true
         },
         "group": "NN Params",
-        "order": 11
+        "order": 12
       },
       "gpus": {
         "default": [
@@ -285,7 +293,6 @@
             32
           ],
           "num_class": 2,
-          "local_iterations": 1,
           "validation_epochs": 1,
           "precision_bits": 32,
           "dad_reduction_rank": 10,
@@ -308,7 +315,6 @@
           "model_scale": 1,
           "input_channel": 1,
           "num_class": 2,
-          "local_iterations": 1,
           "validation_epochs": 1,
           "precision_bits": 32
         },
