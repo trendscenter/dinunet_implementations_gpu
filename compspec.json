@@ -297,6 +297,9 @@
             32
           ],
           "num_class": 2,
+          "local_iterations": 1,
+          "validation_epochs": 1,
+          "precision_bits": 32,
           "dad_reduction_rank": 10,
           "dad_num_pow_iters": 5,
           "dad_tol": 0.001
@@ -316,7 +319,10 @@
           "labels_column": "isControl",
           "model_scale": 1,
           "input_channel": 1,
-          "num_class": 2
+          "num_class": 2,
+          "local_iterations": 1,
+          "validation_epochs": 1,
+          "precision_bits": 32
         },
         "label": "VBM classification parameters.",
         "type": "object",
