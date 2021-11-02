@@ -17,8 +17,8 @@ def run(data):
     _start = time.time()
     start_time = CACHE.setdefault('start_time', _start)
 
-    if MP_POOL is None:
-        MP_POOL = mp.Pool(processes=data['input'].get('num_reducers', 2))
+    if MP_POOL is None and CACHE.get('num_reducers'):
+        MP_POOL = mp.Pool(processes=CACHE['num_reducers'])
 
     remote = COINNRemote(
         cache=CACHE, input=data['input'], state=data['state']
