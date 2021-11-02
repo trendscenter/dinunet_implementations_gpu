@@ -163,25 +163,13 @@
         },
         "label": "Pretraining arguments:",
         "type": "object",
-        "source": "member",
+        "source": "owner",
         "conditional": {
           "variable": "pretrain",
           "value": true
         },
         "group": "NN Params",
         "order": 11
-      },
-      "validation_epochs": {
-        "default": 1,
-        "label": "Run validation after epochs:",
-        "type": "number",
-        "source": "owner",
-        "conditional": {
-          "variable": "mode",
-          "value": "train"
-        },
-        "group": "NN Params",
-        "order": 12
       },
       "gpus": {
         "default": [
