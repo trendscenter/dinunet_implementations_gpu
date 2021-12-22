@@ -7,7 +7,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from coinstac_dinunet import COINNDataset, COINNTrainer, COINNDataHandle
-from coinstac_dinunet.data.datautils import init_k_folds
 from coinstac_dinunet.metrics import Prf1a
 
 from .models import ICALstm
@@ -36,32 +35,32 @@ class ICADataset(COINNDataset):
         self.window_size = 20
         self.window_stride = 10
 
-    def load_index(self, site, ix):
-        if not self.data:
+    def load_index(self, ix):
+        if self.data is None:
             self.labels = pd.DataFrame(self.state['baseDirectory'] + os.sep + self.cache['labels_file'])
             self.labels = self.labels.set_index('data_index')
 
-            hf = h5py.File(self.path(site, 'data_file'), "r")
-            data = np.array(hf.get(self.inputspecs[site]['h5py_key']))
+            hf = h5py.File(self.path(cache_key='data_file'), "r")
+            data = np.array(hf.get(self.cache['h5py_key']))
             data = data.reshape((data.shape[0], self.full_comp, self.spatial_dim))
 
-            use_ix = read_lines(self.path(site, 'components_file'))
+            use_ix = read_lines(self.path(cache_key='components_file'))
             data = data[:, use_ix, :]
 
             unfold = nn.Unfold(kernel_size=(1, self.window_size), stride=(1, self.window_stride))
             data = unfold(data.unsqueeze(2)).reshape(157, -1, 53, self.window_stride)
 
-            assert (data.shape[1] == self.inputspecs[site]['seq_len']), \
-                f"Sequence len did not match: {data.shape[1]} vs {self.inputspecs[site]['seq_len']}"
-            self.data[site] = data
+            assert (data.shape[1] == self.cache['seq_len']), \
+                f"Sequence len did not match: {data.shape[1]} vs {self.cache['seq_len']}"
+            self.data = data
 
         y = self.labels.loc[ix][0]
 
         """int64 could not be json serializable.  """
-        self.indices.append([site, ix, int(y)])
+        self.indices.append([ix, int(y)])
 
     def __getitem__(self, ix):
-        site, data_index, y = self.indices[ix]
+        data_index, y = self.indices[ix]
         return {'inputs': self.data[data_index].clone(), 'labels': y}
 
 
@@ -104,8 +103,8 @@ class ICATrainer(COINNTrainer):
 
 
 class ICADataHandle(COINNDataHandle):
-    def prepare_data(self):
+    def list_files(self):
         ix = list(
             pd.DataFrame(self.state['baseDirectory'] + os.sep + self.cache['labels_file'])['data_index'].tolist()
         )
-        return init_k_folds(ix, self.cache, self.state)
+        return ix

@@ -8,7 +8,6 @@ import torch.nn.functional as F
 import torchio as tio
 from coinstac_dinunet import COINNDataset, COINNTrainer, COINNDataHandle
 from coinstac_dinunet.metrics import Prf1a
-from coinstac_dinunet.data.datautils import init_k_folds
 
 from .models import VBMNet
 
@@ -16,13 +15,13 @@ from .models import VBMNet
 class VBMDataset(COINNDataset):
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.labels = {}
+        self.labels = None
         self.transform = tio.Compose([tio.RandomFlip(axes=(0, 1, 2))])
 
-    def load_index(self, site, file):
-        if self.labels.get(site) is None:
-            self.labels[site] = pd.DataFrame(self.inputspecs[site]['covariates']).T
-        y = self.labels[site].loc[file][self.inputspecs[site]['labels_column']]
+    def load_index(self, file):
+        if self.labels is None:
+            self.labels = pd.DataFrame(self.cache['covariates']).T
+        y = self.labels.loc[file][self.cache['labels_column']]
 
         if isinstance(y, str):
             y = int(y.strip().lower() == 'true')
@@ -30,7 +29,7 @@ class VBMDataset(COINNDataset):
         """
         int64 could not be json serializable.
         """
-        self.indices.append([site, file, int(y)])
+        self.indices.append([file, int(y)])
 
     def __getitem__(self, ix):
         site, file, y = self.indices[ix]
@@ -84,6 +83,5 @@ class VBMTrainer(COINNTrainer):
 
 
 class VBMDataHandle(COINNDataHandle):
-    def prepare_data(self):
-        files = list(pd.DataFrame(self.cache['covariates']).T.index)
-        return init_k_folds(files, self.cache, self.state)
+    def list_files(self):
+        return list(pd.DataFrame(self.cache['covariates']).T.index)
