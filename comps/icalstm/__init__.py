@@ -30,10 +30,11 @@ class ICADataset(COINNDataset):
         super().__init__(**kw)
         self.labels = None
         self.data = None
-        self.full_comp = 100
-        self.spatial_dim = 140
-        self.window_size = 20
-        self.window_stride = 10
+        self.full_comp_size = self.cache.setdefault('full_comp_size', 100)
+        self.spatial_dim = self.cache.setdefault('spatial_dim', 140)
+        self.window_size = self.cache.setdefault('window_size', 20)
+        self.window_stride = self.cache.setdefault('window_stride', 10)
+        self.seq_len = self.cache.setdefault('seq_len', 13)
 
     def load_index(self, ix):
         if self.data is None:
@@ -42,15 +43,16 @@ class ICADataset(COINNDataset):
 
             hf = h5py.File(self.path(cache_key='data_file'), "r")
             data = np.array(hf.get(self.cache['h5py_key']))
-            data = data.reshape((data.shape[0], self.full_comp, self.spatial_dim))
+            data = data.reshape((data.shape[0], self.full_comp_size, self.spatial_dim))
 
-            use_ix = read_lines(self.path(cache_key='components_file'))
-            data = data[:, use_ix, :]
+            if self.cache.get('components_file'):
+                use_ix = read_lines(self.path(cache_key='components_file'))
+                data = data[:, use_ix, :]
 
             unfold = nn.Unfold(kernel_size=(1, self.window_size), stride=(1, self.window_stride))
-            data = unfold(data.unsqueeze(2)).reshape(157, -1, 53, self.window_stride)
+            data = unfold(data.unsqueeze(2)).reshape(data.shape[0], -1, data.shape[1], self.window_stride)
 
-            assert (data.shape[1] == self.cache['seq_len']), \
+            assert (data.shape[1] == self.seq_len), \
                 f"Sequence len did not match: {data.shape[1]} vs {self.cache['seq_len']}"
             self.data = data
 
