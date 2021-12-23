@@ -1,0 +1,58 @@
+[
+  {
+    "mode": {
+      "value": "train"
+    },
+    "gpus": {
+      "value": [
+        0
+      ]
+    },
+    "num_class": {
+      "value": 2
+    },
+    "num_workers": {
+      "value": 2
+    },
+    "learning_rate": {
+      "value": 0.001
+    },
+    "data_file": {
+      "value": "COBRE_AllData.h5"
+    },
+    "labels_file": {
+      "value": "COBRE_local0_2.csv"
+    },
+    "components_file": {
+      "value": "correct_indices_GSP.csv"
+    }
+  },
+  {
+    "mode": {
+      "value": "train"
+    },
+    "gpus": {
+      "value": [
+        1
+      ]
+    },
+    "num_class": {
+      "value": 2
+    },
+    "num_workers": {
+      "value": 2
+    },
+    "learning_rate": {
+      "value": 0.001
+    },
+    "data_file": {
+      "value": "COBRE_AllData.h5"
+    },
+    "labels_file": {
+      "value": "COBRE_local1_2.csv"
+    },
+    "components_file": {
+      "value": "correct_indices_GSP.csv"
+    }
+  }
+]

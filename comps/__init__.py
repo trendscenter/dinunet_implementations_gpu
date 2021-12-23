@@ -1,13 +1,15 @@
 from enum import Enum
 
-from .vbm import *
 from .fs import *
+from .icalstm import *
+from .vbm import *
 
 
 class NNComputation(str, Enum):
     """ Available tasks """
     TASK_VBM = "VBM-Classification"
     TASK_FREESURFER = "FS-Classification"
+    TASK_ICA = "ICA-Classification"
 
 
 class AggEngine(str, Enum):

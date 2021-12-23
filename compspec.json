@@ -63,7 +63,8 @@
         "default": "FS-Classification",
         "values": [
           "FS-Classification",
-          "VBM-Classification"
+          "VBM-Classification",
+          "ICA-Classification"
         ],
         "label": "Pick a NN task:",
         "type": "select",
@@ -245,51 +246,6 @@
         "group": "NN Params",
         "order": 18
       },
-      "monitor_metric": {
-        "default": "f1",
-        "label": "Metric to monitor for model selection:",
-        "type": "select",
-        "values": [
-          "f1",
-          "accuracy",
-          "precision",
-          "recall",
-          "overlap",
-          "average",
-          "time"
-        ],
-        "source": "owner",
-        "conditional": {
-          "variable": "mode",
-          "value": "train"
-        },
-        "group": "NN Params",
-        "order": 19
-      },
-      "metric_direction": {
-        "default": "maximize",
-        "label": "Pick metrics direction of improvement:",
-        "type": "select",
-        "values": [
-          "maximize",
-          "minimize"
-        ],
-        "source": "owner",
-        "conditional": {
-          "variable": "mode",
-          "value": "train"
-        },
-        "group": "NN Params",
-        "order": 20
-      },
-      "log_header": {
-        "default": "Loss|F1",
-        "label": "Plots to be generated. Separate plots for items separated by pipe '|':",
-        "type": "string",
-        "source": "owner",
-        "group": "NN Params",
-        "order": 21
-      },
       "split_ratio": {
         "default": [
           0.8,
@@ -351,6 +307,35 @@
         },
         "group": "Computation",
         "order": 25
+      },
+      "ICA-Classification_args": {
+        "default": {
+          "num_class": 2,
+          "monitor_metric": "auc",
+          "metric_direction": "maximize",
+          "log_header": "Loss|AUC",
+          "full_comp_size": 100,
+          "spatial_dim": 140,
+          "window_size": 20,
+          "window_stride": 10,
+          "seq_len": 13,
+          "data_file": "<Required>",
+          "labels_file": "<Required>",
+          "components_file": "<Required>",
+          "num_layers": 1,
+          "input_size": 256,
+          "hidden_size": 384,
+          "proj_size": 128
+        },
+        "label": "ICA classification parameters.",
+        "type": "object",
+        "source": "owner",
+        "conditional": {
+          "variable": "task_id",
+          "value": "ICA-Classification"
+        },
+        "group": "Computation",
+        "order": 26
       }
     },
     "output": {

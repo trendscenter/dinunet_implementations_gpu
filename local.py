@@ -5,8 +5,9 @@ from coinstac_dinunet import COINNLocal
 from coinstac_dinunet.utils import duration
 
 from comps import AggEngine
-from comps import NNComputation, VBMTrainer, VBMDataset, VBMDataHandle
 from comps import FreeSurferTrainer, FreeSurferDataset, FSVDataHandle
+from comps import ICATrainer, ICADataset, ICADataHandle
+from comps import NNComputation, VBMTrainer, VBMDataset, VBMDataHandle
 
 """ Test """
 computation = NNComputation.TASK_FREESURFER
@@ -40,6 +41,9 @@ def run(data):
 
     elif local.cache['task_id'] == NNComputation.TASK_VBM:
         args = VBMTrainer, VBMDataset, VBMDataHandle
+
+    elif local.cache['task_id'] == NNComputation.TASK_ICA:
+        args = ICATrainer, ICADataset, ICADataHandle
 
     else:
         raise ValueError(f"Invalid local task:{local.cache.get('task')}")

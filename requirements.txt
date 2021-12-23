@@ -5,4 +5,5 @@ torchvision==0.8.2+cu92
 nibabel~=3.1.0
 torchio==0.18.29
 coinstac>=0.2.0
-coinstac-dinunet>=2.3.0
+coinstac-dinunet>=2.3.1
+h5py>=3.1.0
