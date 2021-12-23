@@ -310,10 +310,22 @@
       },
       "ICA-Classification_args": {
         "default": {
-          "labels_column": "isControl",
-          "model_scale": 1,
-          "input_channel": 1,
-          "num_class": 2
+          "num_class": 2,
+          "monitor_metric": "auc",
+          "metric_direction": "maximize",
+          "log_header": "Loss|AUC",
+          "full_comp_size": 100,
+          "spatial_dim": 140,
+          "window_size": 20,
+          "window_stride": 10,
+          "seq_len": 13,
+          "data_file": "<Required>",
+          "labels_file": "<Required>",
+          "components_file": "<Required>",
+          "num_layers": 1,
+          "input_size": 512,
+          "hidden_size": 384,
+          "proj_size": 128
         },
         "label": "ICA classification parameters.",
         "type": "object",
