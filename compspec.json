@@ -246,51 +246,6 @@
         "group": "NN Params",
         "order": 18
       },
-      "monitor_metric": {
-        "default": "f1",
-        "label": "Metric to monitor for model selection:",
-        "type": "select",
-        "values": [
-          "f1",
-          "accuracy",
-          "precision",
-          "recall",
-          "overlap",
-          "average",
-          "time"
-        ],
-        "source": "owner",
-        "conditional": {
-          "variable": "mode",
-          "value": "train"
-        },
-        "group": "NN Params",
-        "order": 19
-      },
-      "metric_direction": {
-        "default": "maximize",
-        "label": "Pick metrics direction of improvement:",
-        "type": "select",
-        "values": [
-          "maximize",
-          "minimize"
-        ],
-        "source": "owner",
-        "conditional": {
-          "variable": "mode",
-          "value": "train"
-        },
-        "group": "NN Params",
-        "order": 20
-      },
-      "log_header": {
-        "default": "Loss|F1",
-        "label": "Plots to be generated. Separate plots for items separated by pipe '|':",
-        "type": "string",
-        "source": "owner",
-        "group": "NN Params",
-        "order": 21
-      },
       "split_ratio": {
         "default": [
           0.8,
@@ -360,7 +315,7 @@
           "input_channel": 1,
           "num_class": 2
         },
-        "label": "VBM classification parameters.",
+        "label": "ICA classification parameters.",
         "type": "object",
         "source": "owner",
         "conditional": {

@@ -60,12 +60,6 @@ class FreeSurferTrainer(COINNTrainer):
         return {'out': out, 'loss': loss, 'averages': val, 'metrics': score, 'prediction': predicted,
                 'indices': indices}
 
-    def _set_monitor_metric(self):
-        self.cache['monitor_metric'] = 'f1', 'maximize'
-
-    def _set_log_headers(self):
-        self.cache['log_header'] = 'Loss|Accuracy,F1'
-
     def new_metrics(self):
         return Prf1a()
 

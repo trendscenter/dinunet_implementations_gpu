@@ -72,12 +72,6 @@ class VBMTrainer(COINNTrainer):
         return {'out': out, 'loss': loss, 'averages': val, 'metrics': score, 'prediction': predicted,
                 'indices': indices}
 
-    def _set_monitor_metric(self):
-        self.cache['monitor_metric'] = 'f1', 'maximize'
-
-    def _set_log_headers(self):
-        self.cache['log_header'] = 'loss|accuracy,f1'
-
     def new_metrics(self):
         return Prf1a()
 

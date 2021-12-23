@@ -43,7 +43,7 @@ class ICADataset(COINNDataset):
             self.labels = self.labels.set_index('index')
 
             hf = h5py.File(self.path(cache_key='data_file'), "r")
-            data = np.array(hf.get(self.h5py_key))[self.labels.index, :]
+            data = np.array(hf.get(self.h5py_key))
             data = data.reshape((data.shape[0], self.full_comp_size, self.spatial_dim))
 
             if self.cache.get('components_file'):
@@ -98,12 +98,6 @@ class ICATrainer(COINNTrainer):
         val.add(loss.item(), len(inputs))
 
         return {'out': out, 'loss': loss, 'averages': val, 'metrics': score, 'prediction': pred}
-
-    def _set_monitor_metric(self):
-        self.cache['monitor_metric'] = 'f1', 'maximize'
-
-    def _set_log_headers(self):
-        self.cache['log_header'] = 'loss|accuracy,f1'
 
     def new_metrics(self):
         return Prf1a()
