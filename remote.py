@@ -31,7 +31,7 @@ def run(data):
     elif remote.cache['task_id'] == NNComputation.TASK_VBM:
         args = VBMTrainer,
 
-    elif remote.cache['task_id'] == NNComputation.TASK_VBM:
+    elif remote.cache['task_id'] == NNComputation.TASK_ICA:
         args = ICATrainer,
 
     else:
