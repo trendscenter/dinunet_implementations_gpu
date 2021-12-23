@@ -4,7 +4,7 @@ import time
 from coinstac_dinunet import COINNRemote
 from coinstac_dinunet.utils import duration
 
-from comps import NNComputation, VBMTrainer, FreeSurferTrainer
+from comps import NNComputation, VBMTrainer, FreeSurferTrainer, ICATrainer
 
 CACHE = {}
 MP_POOL = None
@@ -30,6 +30,9 @@ def run(data):
 
     elif remote.cache['task_id'] == NNComputation.TASK_VBM:
         args = VBMTrainer,
+
+    elif remote.cache['task_id'] == NNComputation.TASK_VBM:
+        args = ICATrainer,
 
     else:
         raise ValueError(f"Invalid remote task:{remote.cache.get('task')}")

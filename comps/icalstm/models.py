@@ -1,31 +1,5 @@
-import h5py
-import matplotlib.pyplot as plt
-import numpy as np
-
-plt.rcParams["figure.figsize"] = (20, 10)
-import torch.nn as nn
 import torch
-
-hf = h5py.File("Data/COBRE_AllData.h5", "r")
-raw_data = hf.get("COBRE_dataset")
-raw_data = np.array(raw_data)
-raw_data = raw_data.reshape(157, 100, 140)
-
-
-def read_ix(file):
-    return [int(float(l.strip())) for l in open(file).readlines()]
-
-
-use_comps = read_ix('IndicesAndLabels/correct_indices_GSP.csv')
-labels = read_ix('IndicesAndLabels/labels_COBRE.csv')
-
-data = raw_data[:, use_comps, :]
-labels = torch.from_numpy(np.array(labels) - 1)
-_data = torch.from_numpy(data)
-
-unfold = nn.Unfold(kernel_size=(1, 20), stride=(1, 5))
-_data = unfold(_data.unsqueeze(2)).reshape(157, -1, 53, 20)
-seq_len = _data.shape[1]
+import torch.nn as nn
 
 
 class ICALstm(nn.Module):

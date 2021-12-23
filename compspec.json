@@ -63,7 +63,8 @@
         "default": "FS-Classification",
         "values": [
           "FS-Classification",
-          "VBM-Classification"
+          "VBM-Classification",
+          "ICA-Classification"
         ],
         "label": "Pick a NN task:",
         "type": "select",
@@ -351,6 +352,23 @@
         },
         "group": "Computation",
         "order": 25
+      },
+      "ICA-Classification_args": {
+        "default": {
+          "labels_column": "isControl",
+          "model_scale": 1,
+          "input_channel": 1,
+          "num_class": 2
+        },
+        "label": "VBM classification parameters.",
+        "type": "object",
+        "source": "owner",
+        "conditional": {
+          "variable": "task_id",
+          "value": "ICA-Classification"
+        },
+        "group": "Computation",
+        "order": 26
       }
     },
     "output": {
