@@ -36,7 +36,7 @@ class ICALstm(nn.Module):
         )
 
         self.classifier = nn.Sequential(
-            nn.Dropout(0.4),
+            nn.Dropout(0.3),
             nn.Linear(self.direction * proj_size * seq_len, 256),
             nn.BatchNorm1d(256),
             nn.ReLU(),

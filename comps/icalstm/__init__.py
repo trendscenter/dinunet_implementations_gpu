@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from coinstac_dinunet import COINNDataset, COINNTrainer, COINNDataHandle
-from coinstac_dinunet.metrics import Prf1a
+from coinstac_dinunet.metrics import AUCROCMetrics
 
 from .models import ICALstm
 
@@ -76,7 +76,7 @@ class ICATrainer(COINNTrainer):
     def _init_nn_model(self):
         self.nn['net'] = ICALstm(
             num_layers=self.cache.setdefault('num_layers', 1),
-            input_size=self.cache.setdefault('input_size', 512),
+            input_size=self.cache.setdefault('input_size', 256),
             seq_len=self.cache.setdefault('seq_len', 13),
             hidden_size=self.cache.setdefault('hidden_size', 384),
             proj_size=self.cache.setdefault('proj_size', 128),
@@ -85,22 +85,21 @@ class ICATrainer(COINNTrainer):
 
     def iteration(self, batch):
         inputs, labels = batch['inputs'].to(self.device['gpu']).float(), batch['labels'].to(self.device['gpu']).long()
-
         out, h = self.nn['net'](inputs)
-        out = F.log_softmax(out, 1)
-        loss = F.nll_loss(out, labels)
+        prob = torch.softmax(out, 1)
+        loss = F.cross_entropy(out, labels)
 
-        _, pred = torch.max(out, 1)
+        _, pred = torch.max(prob, 1)
         score = self.new_metrics()
-        score.add(pred, labels)
+        score.add(prob[:, 1], labels)
 
         val = self.new_averages()
         val.add(loss.item(), len(inputs))
 
-        return {'out': out, 'loss': loss, 'averages': val, 'metrics': score, 'prediction': pred}
+        return {'out': prob, 'loss': loss, 'averages': val, 'metrics': score}
 
     def new_metrics(self):
-        return Prf1a()
+        return AUCROCMetrics()
 
 
 class ICADataHandle(COINNDataHandle):
