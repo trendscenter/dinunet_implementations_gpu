@@ -12,15 +12,6 @@ from coinstac_dinunet.metrics import AUCROCMetrics
 from .models import ICALstm
 
 
-# input_size=256,
-# hidden_size=256,
-# num_layers=1,
-# num_cls=2,
-# bidirectional=True,
-# proj_size=64, num_comps=53,
-# window_size=20,
-# seq_len=7
-
 def read_lines(file):
     return np.array([int(float(l.strip())) for l in open(file).readlines()])
 
@@ -75,11 +66,9 @@ class ICATrainer(COINNTrainer):
 
     def _init_nn_model(self):
         self.nn['net'] = ICALstm(
-            num_layers=self.cache.setdefault('num_layers', 1),
             input_size=self.cache.setdefault('input_size', 256),
             seq_len=self.cache.setdefault('seq_len', 13),
             hidden_size=self.cache.setdefault('hidden_size', 384),
-            proj_size=self.cache.setdefault('proj_size', 128),
             num_cls=self.cache.setdefault('num_class', 2)
         )
 
