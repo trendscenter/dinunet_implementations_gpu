@@ -192,7 +192,7 @@
         "group": "NN Params",
         "order": 13
       },
-       "precision_bits": {
+      "precision_bits": {
         "default": "32",
         "label": "Floating point precision for payload:",
         "type": "select",
