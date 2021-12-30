@@ -54,7 +54,7 @@
         ],
         "extensions": [
           "csv",
-          "txt"
+          "nii"
         ],
         "source": "owner",
         "order": 2
