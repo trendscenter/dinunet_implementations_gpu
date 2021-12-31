@@ -48,15 +48,16 @@
       },
       "data": {
         "label": "Data",
-        "type": "freesurfer",
+        "type": "files",
         "items": [
-          "FreeSurfer"
+          "Files"
         ],
         "extensions": [
           "csv",
-          "nii"
+          "txt",
+          "h5"
         ],
-        "source": "owner",
+        "source": "member",
         "order": 2
       },
       "task_id": {
