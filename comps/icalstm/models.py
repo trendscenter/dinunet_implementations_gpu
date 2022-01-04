@@ -76,8 +76,7 @@ class ICALstm(nn.Module):
     def forward(self, x):
         """Encode to low dim first"""
         x = torch.stack([self.encoder(b.view(b.shape[0], -1)) for b in x])
-
-        h = self.init_hidden(len(x))
+        h = self.init_hidden(len(x), device=x.device)
         o, h = self.lstm(x, h)
 
         return self.classifier(o.flatten(1)), h
