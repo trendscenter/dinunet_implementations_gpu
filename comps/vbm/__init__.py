@@ -32,8 +32,8 @@ class VBMDataset(COINNDataset):
         self.indices.append([file, int(y)])
 
     def __getitem__(self, ix):
-        site, file, y = self.indices[ix]
-        data_dir = self.path(site)
+        file, y = self.indices[ix]
+        data_dir = self.path()
         nif = np.array(ni.load(data_dir + os.sep + file).dataobj)
         nif[nif < 0.05] = 0
 
