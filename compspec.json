@@ -280,7 +280,8 @@
           "num_class": 2,
           "dad_reduction_rank": 10,
           "dad_num_pow_iters": 5,
-          "dad_tol": 0.001
+          "dad_tol": 0.001,
+          "split_files": []
         },
         "label": "FreeSurfer classification parameters.",
         "type": "object",
@@ -297,7 +298,8 @@
           "labels_column": "isControl",
           "model_scale": 1,
           "input_channel": 1,
-          "num_class": 2
+          "num_class": 2,
+          "split_files": []
         },
         "label": "VBM classification parameters.",
         "type": "object",
@@ -323,6 +325,7 @@
           "data_file": "<Required!>",
           "labels_file": "<Required!>",
           "components_file": "<Required!>",
+          "split_files": [],
           "input_size": 256,
           "hidden_size": 384,
           "dad_reduction_rank": 10,
