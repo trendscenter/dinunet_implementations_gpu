@@ -90,7 +90,8 @@
         "default": "dSGD",
         "values": [
           "dSGD",
-          "rankDAD"
+          "rankDAD",
+          "powerSGD"
         ],
         "label": "Pick aggregation engine:",
         "type": "select",
