@@ -1,3 +1,5 @@
+import sys
+sys.path.append('.')
 from coinstac_dinunet.site_runner import SiteRunner
 
 from comps.icalstm import ICATrainer, ICADataHandle, ICADataset
