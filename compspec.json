@@ -269,6 +269,39 @@
         "group": "NN Params",
         "order": 23
       },
+      "rankDAD_args": {
+        "default": {
+          "dad_reduction_rank": 10,
+          "dad_num_pow_iters": 5,
+          "dad_tol": 0.001
+        },
+        "label": "RankDAD engine parameters.",
+        "type": "object",
+        "source": "owner",
+        "group": "Computation",
+        "conditional": {
+          "variable": "agg_engine",
+          "value": "rankDAD"
+        },
+        "order": 24
+      },
+      "powerSGD_args": {
+        "default": {
+          "matrix_approximation_rank": 1,
+          "start_powerSGD_iter": 10,
+          "use_error_feedback": true,
+          "warm_start": true
+        },
+        "label": "PowerSGD engine parameters.",
+        "type": "object",
+        "source": "owner",
+        "group": "Computation",
+        "conditional": {
+          "variable": "agg_engine",
+          "value": "powerSGD"
+        },
+        "order": 25
+      },
       "FS-Classification_args": {
         "default": {
           "labels_column": "isControl",
@@ -280,9 +313,6 @@
             32
           ],
           "num_class": 2,
-          "dad_reduction_rank": 10,
-          "dad_num_pow_iters": 5,
-          "dad_tol": 0.001,
           "split_files": []
         },
         "label": "FreeSurfer classification parameters.",
@@ -293,7 +323,7 @@
           "variable": "task_id",
           "value": "FS-Classification"
         },
-        "order": 24
+        "order": 26
       },
       "VBM-Classification_args": {
         "default": {
@@ -311,7 +341,7 @@
           "value": "VBM-Classification"
         },
         "group": "Computation",
-        "order": 25
+        "order": 27
       },
       "ICA-Classification_args": {
         "default": {
@@ -329,10 +359,7 @@
           "components_file": "<Required!>",
           "split_files": [],
           "input_size": 256,
-          "hidden_size": 384,
-          "dad_reduction_rank": 10,
-          "dad_num_pow_iters": 5,
-          "dad_tol": 0.001
+          "hidden_size": 384
         },
         "label": "ICA classification parameters.",
         "type": "object",
@@ -342,7 +369,7 @@
           "value": "ICA-Classification"
         },
         "group": "Computation",
-        "order": 26
+        "order": 28
       }
     },
     "output": {
