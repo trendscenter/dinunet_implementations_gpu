@@ -15,3 +15,4 @@ class NNComputation(str, Enum):
 class AggEngine(str, Enum):
     DECENTRALIZED_SGD = "dSGD"
     RANK_DAD = "rankDAD"
+    POWER_SGD = "powerSGD"
