@@ -33,7 +33,22 @@
       "dockerImage": "coinstacteam/coinstac-dinunet-gpu",
       "command": [
         "python"
-      ]
+      ],
+      "containerOptions": {
+        "HostConfig": {
+          "DeviceRequests": [
+            {
+              "Drivers": "nvidia",
+              "Capabilities": [
+                [
+                  "gpu"
+                ]
+              ]
+            }
+          ],
+          "ShmSize": 8589934592
+        }
+      }
     },
     "input": {
       "covariates": {
