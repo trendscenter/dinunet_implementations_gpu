@@ -2,10 +2,10 @@ import torch
 import torch.nn as nn
 
 
-class _LSTM(nn.Module):
+class LSTMCell(nn.Module):
 
     def __init__(self, input_size, hidden_size, bias=True):
-        super(_LSTM, self).__init__()
+        super(LSTMCell, self).__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size
 
@@ -13,10 +13,18 @@ class _LSTM(nn.Module):
         self.i2h = nn.Linear(input_size, 4 * hidden_size, bias=bias)
         self.h2h = nn.Linear(hidden_size, 4 * hidden_size, bias=bias)
 
-    def forward(self, x, h):
-        h_t, c_t = h
+    def init_hidden(self, bz, device='cpu'):
+        return (torch.zeros(bz, self.hidden_size, device=device),
+                torch.zeros(bz, self.hidden_size, device=device))
+
+    def forward(self, x, h=None):
         bsz, seq_sz, _ = x.shape
         HZ = self.hidden_size
+
+        if h is None:
+            h_t, c_t = self.init_hidden(bsz, x.device)
+        else:
+            h_t, c_t = h
 
         hidden_seq = []
         for t in range(seq_sz):
@@ -37,11 +45,33 @@ class _LSTM(nn.Module):
         return hidden_seq, (h_t, c_t)
 
 
+class LSTM(nn.Module):
+    def __init__(self, input_size, hidden_size, bidirectional=True, num_layers=1, bias=True):
+        super().__init__()
+        self.input_size = input_size
+        self.num_layers = num_layers
+        self.bidirectional = bidirectional
+        self.num_direction = 2 if bidirectional else 1
+        self.hidden_size = hidden_size // self.num_direction
+        self.bias = bias
+        self.lstms = [LSTMCell(self.input_size, self.hidden_size) for _ in range(self.num_direction)]
+
+    def forward(self, x, h=None):
+        hidden_seq, (h_t, c_t) = self.lstms[0](x, h)
+        if self.bidirectional:
+            rev_hidden_seq, (rev_h_t, rev_c_t) = self.lstms[1](torch.flip(x, (1,)), h)
+            hidden_seq = torch.cat([hidden_seq, rev_hidden_seq], 2)
+            h_t = torch.cat([h_t, rev_h_t], 1)
+            c_t = torch.cat([c_t, rev_c_t], 1)
+        return hidden_seq, (h_t, c_t)
+
+
 class ICALstm(nn.Module):
 
     def __init__(self,
                  input_size=256,
                  hidden_size=256,
+                 bidirectional=True,
                  num_cls=2,
                  num_comps=53,
                  window_size=20,
@@ -51,21 +81,20 @@ class ICALstm(nn.Module):
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.num_layers = 1
-        self.direction = 1
 
         self.num_comp = num_comps
         self.window_size = window_size
 
         self.encoder = nn.Linear(self.num_comp * self.window_size, self.input_size)
-
-        self.lstm = _LSTM(
+        self.lstm = LSTM(
             input_size=input_size,
-            hidden_size=hidden_size
+            hidden_size=hidden_size,
+            bidirectional=bidirectional
         )
 
         self.classifier = nn.Sequential(
             nn.Dropout(0.5),
-            nn.Linear(self.direction * hidden_size * seq_len, 256),
+            nn.Linear(hidden_size * seq_len, 256),
             nn.BatchNorm1d(256),
             nn.ReLU(),
             nn.Linear(256, num_cls)
@@ -76,11 +105,5 @@ class ICALstm(nn.Module):
     def forward(self, x):
         """Encode to low dim first"""
         x = torch.stack([self.encoder(b.view(b.shape[0], -1)) for b in x])
-        h = self.init_hidden(len(x), device=x.device)
-        o, h = self.lstm(x, h)
-
+        o, h = self.lstm(x)
         return self.classifier(o.flatten(1)), h
-
-    def init_hidden(self, bz, device='cpu'):
-        return (torch.zeros(self.direction * self.num_layers, bz, self.hidden_size, device=device).squeeze(),
-                torch.zeros(self.direction * self.num_layers, bz, self.hidden_size, device=device).squeeze())
