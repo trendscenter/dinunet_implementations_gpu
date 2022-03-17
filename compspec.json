@@ -364,7 +364,6 @@
           "monitor_metric": "auc",
           "metric_direction": "maximize",
           "log_header": "Loss|AUC",
-          "seed": 10,
           "full_comp_size": 100,
           "spatial_dim": 140,
           "window_size": 20,
