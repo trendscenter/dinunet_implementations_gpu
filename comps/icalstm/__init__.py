@@ -7,7 +7,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from coinstac_dinunet import COINNDataset, COINNTrainer, COINNDataHandle
-from coinstac_dinunet.metrics import AUCROCMetrics
 
 from .models import ICALstm
 
@@ -86,9 +85,6 @@ class ICATrainer(COINNTrainer):
         val.add(loss.item(), len(inputs))
 
         return {'out': prob, 'loss': loss, 'averages': val, 'metrics': score}
-
-    def new_metrics(self):
-        return AUCROCMetrics()
 
 
 class ICADataHandle(COINNDataHandle):

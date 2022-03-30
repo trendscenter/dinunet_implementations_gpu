@@ -4,7 +4,6 @@ import pandas as pd
 import torch
 import torch.nn.functional as F
 from coinstac_dinunet import COINNDataset, COINNTrainer, COINNDataHandle
-from coinstac_dinunet.metrics import Prf1a
 
 from .models import FSNet
 
@@ -15,8 +14,12 @@ class FreeSurferDataset(COINNDataset):
         self.labels = None
 
     def load_index(self, file):
+
         if self.labels is None:
-            self.labels = pd.DataFrame(self.cache['covariates']).T
+            self.labels = pd.read_csv(self.state['baseDirectory'] + os.sep + self.cache["labels_file"])
+            if self.cache.get('data_column') in self.labels.columns:
+                self.labels = self.labels.set_index(self.cache['data_column'])
+
         y = self.labels.loc[file][self.cache['labels_column']]
 
         if isinstance(y, str):
@@ -42,7 +45,7 @@ class FreeSurferTrainer(COINNTrainer):
 
     def _init_nn_model(self):
         self.nn['fs_net'] = FSNet(in_size=self.cache['input_size'],
-                                  hidden_sizes=self.cache['hidden_sizes'], out_size=self.cache['num_class'])
+                                    hidden_sizes=self.cache['hidden_sizes'], out_size=self.cache['num_class'])
 
     def iteration(self, batch):
         inputs, labels = batch['inputs'].to(self.device['gpu']).float(), batch['labels'].to(self.device['gpu']).long()
@@ -60,10 +63,10 @@ class FreeSurferTrainer(COINNTrainer):
         return {'out': out, 'loss': loss, 'averages': val, 'metrics': score, 'prediction': predicted,
                 'indices': indices}
 
-    def new_metrics(self):
-        return Prf1a()
-
 
 class FSVDataHandle(COINNDataHandle):
     def list_files(self):
-        return list(pd.DataFrame(self.cache['covariates']).T.index)
+        df = pd.read_csv(self.state['baseDirectory'] + os.sep + self.cache["labels_file"])
+        if self.cache.get('data_column') in df.columns:
+            df = df.set_index(self.cache['data_column'])
+        return list(df.index)

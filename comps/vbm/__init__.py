@@ -7,7 +7,6 @@ import torch
 import torch.nn.functional as F
 import torchio as tio
 from coinstac_dinunet import COINNDataset, COINNTrainer, COINNDataHandle
-from coinstac_dinunet.metrics import Prf1a
 
 from .models import VBMNet
 
@@ -20,7 +19,10 @@ class VBMDataset(COINNDataset):
 
     def load_index(self, file):
         if self.labels is None:
-            self.labels = pd.DataFrame(self.cache['covariates']).T
+            self.labels = pd.read_csv(self.state['baseDirectory'] + os.sep + self.cache["labels_file"])
+            if self.cache.get('data_column') in self.labels.columns:
+                self.labels = self.labels.set_index(self.cache['data_column'])
+
         y = self.labels.loc[file][self.cache['labels_column']]
 
         if isinstance(y, str):
@@ -72,10 +74,10 @@ class VBMTrainer(COINNTrainer):
         return {'out': out, 'loss': loss, 'averages': val, 'metrics': score, 'prediction': predicted,
                 'indices': indices}
 
-    def new_metrics(self):
-        return Prf1a()
-
 
 class VBMDataHandle(COINNDataHandle):
     def list_files(self):
-        return list(pd.DataFrame(self.cache['covariates']).T.index)
+        df = pd.read_csv(self.state['baseDirectory'] + os.sep + self.cache["labels_file"])
+        if self.cache.get('data_column') in df.columns:
+            df = df.set_index(self.cache['data_column'])
+        return list(df.index)
