@@ -65,9 +65,9 @@ class ICATrainer(COINNTrainer):
 
     def _init_nn_model(self):
         self.nn['net'] = ICALstm(
-            input_size=self.cache.setdefault('input_size', 256),
+            input_size=self.cache.setdefault('input_size', 128),
             seq_len=self.cache.setdefault('seq_len', 13),
-            hidden_size=self.cache.setdefault('hidden_size', 384),
+            hidden_size=self.cache.setdefault('hidden_size', 256),
             num_cls=self.cache.setdefault('num_class', 2)
         )
 
