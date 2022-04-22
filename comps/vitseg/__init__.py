@@ -1,27 +1,20 @@
 import os
+import zipfile
 
-import h5py
 import numpy as np
 import pandas as pd
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 from coinstac_dinunet import COINNDataset, COINNTrainer, COINNDataHandle
-from coinstac_dinunet.metrics import COINNAverages
 from monai.transforms import (
     AddChanneld,
     Compose,
     LoadImaged,
-    ScaleIntensityd,
     SpatialPadd,
     RandAffined,
-    Rand3DElasticd,
-    RandAdjustContrastd,
     EnsureTyped,
     ToDeviced,
 )
-from catalyst.contrib.utils.pandas import dataframe_to_list
-from catalyst.metrics.functional._segmentation import dice
 
 from .models import BrainVit
 from .neuro.training.brain_dataset_cache import BrainCacheDataset
@@ -93,29 +86,23 @@ class BrainVitTrainer(COINNTrainer):
         inputs, labels = batch[0].to(self.device['gpu']).float(), batch[1].to(self.device['gpu']).long()
         y_hat = self.nn['net'](inputs)
         loss = F.cross_entropy(y_hat, labels)
+        y_prob = F.softmax(y_hat, 1)
 
         avg = self.new_averages()
-        avg.add(loss.item(), len(inputs), index=0)
+        avg.add(loss.item(), len(inputs))
 
-        one_hot_targets = (
-            torch.nn.functional.one_hot(labels, self.cache['num_class']).permute(0, 4, 1, 2, 3)
-        )
+        metrics = self.new_metrics()
+        metrics.add(y_prob, labels)
 
-        macro_dice = dice(F.softmax(y_hat), one_hot_targets, mode="macro")
-        avg.add(macro_dice, len(inputs), index=1)
-
-        return {'out': y_hat, 'loss': loss, 'averages': avg}
-
-    def new_averages(self):
-        return COINNAverages(num_averages=2)
+        return {'out': y_hat, 'loss': loss, 'averages': avg, "metrics": metrics}
 
 
 class BrainSegDataHandle(COINNDataHandle):
+    def prepare_data(self):
+        with zipfile.ZipFile(self.state['baseDirectory'] + os.sep + self.cache['data_zip_file'], 'r') as zip_ref:
+            zip_ref.extractall(self.state['outputDirectory'] + os.sep + 'data')
+        return super(BrainSegDataHandle, self).prepare_data()
+
     def list_files(self):
         source = self.state['baseDirectory'] + os.sep + self.cache['labels_file']
-        ix = dataframe_to_list(pd.read_csv(source))
-        return ix
-
-    def prepare_data(self):
-        # Unzip here
-        return super(BrainSegDataHandle, self).prepare_data()
+        return pd.read_csv(source).values.tolist()
