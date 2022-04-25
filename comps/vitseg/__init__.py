@@ -22,8 +22,8 @@ from monai.transforms import (
 from catalyst.contrib.utils.pandas import dataframe_to_list
 from catalyst.metrics.functional._segmentation import dice
 
-from .models import BrainVit
-from .neuro.training.brain_dataset_cache import BrainCacheDataset
+from models import BrainVit
+from neuro.training.brain_dataset_cache import BrainCacheDataset
 
 def read_lines(file):
     return np.array([int(float(l.strip())) for l in open(file).readlines()])

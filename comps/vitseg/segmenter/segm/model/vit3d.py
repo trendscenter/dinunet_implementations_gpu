@@ -14,7 +14,7 @@ from timm.models.layers import trunc_normal_
 from timm.models.vision_transformer import _load_weights
 from einops.layers.torch import Rearrange
 
-from meshvit.ViT3d import build_vit
+#from meshvit.ViT3d import build_vit
 class PatchEmbedding3d(nn.Module):
     def __init__(self, image_size, patch_size, embed_dim, channels):
         super().__init__()

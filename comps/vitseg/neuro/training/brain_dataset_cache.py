@@ -7,7 +7,7 @@ from typing import Any, Callable, List, Union, Sequence, Optional
 from torch.utils.data import Subset
 from monai.data import CacheDataset
 
-from generator_coords import CoordsGenerator
+from .generator_coords import CoordsGenerator
 
 
 class BrainCacheDataset(CacheDataset):
