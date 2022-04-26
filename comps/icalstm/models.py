@@ -66,42 +66,6 @@ class LSTM(nn.Module):
         return hidden_seq, (h_t, c_t)
 
 
-class ENcoder(nn.Module):
-
-    def __init__(self,
-                 input_size=20,
-                 hidden_size=256,
-                 bidirectional=True,
-                 z=256,
-                 seq_len=53):
-        super().__init__()
-
-        self.input_size = input_size
-        self.hidden_size = hidden_size
-        self.num_layers = 1
-
-        self.lstm = LSTM(
-            input_size=input_size,
-            hidden_size=hidden_size,
-            bidirectional=bidirectional
-        )
-
-        self.features = nn.Sequential(
-            nn.Dropout(0.5),
-            nn.Linear(hidden_size * seq_len, 256),
-            nn.BatchNorm1d(256),
-            nn.ReLU(),
-            nn.Linear(256, z),
-            nn.ReLU(),
-            nn.BatchNorm1d(z),
-        )
-
-    def forward(self, x):
-        """Encode to low dim first"""
-        o, h = self.lstm(x)
-        return self.features(o.flatten(1)), h
-
-
 class ICALstm(nn.Module):
 
     def __init__(self,
@@ -111,39 +75,36 @@ class ICALstm(nn.Module):
                  num_cls=2,
                  num_comps=53,
                  window_size=20,
-                 seq_len=7):
+                 num_layers=1):
         super().__init__()
 
         self.input_size = input_size
         self.hidden_size = hidden_size
-        self.num_layers = 1
 
         self.num_comp = num_comps
         self.window_size = window_size
 
-        # 32 * 13 * 53 * 20
-        self.encoder = ENcoder(input_size=window_size, hidden_size=hidden_size // 2, seq_len=num_comps, z=input_size)
+        self.encoder = nn.Sequential(nn.Linear(self.num_comp * self.window_size, self.input_size), nn.ReLU())
         self.lstm = LSTM(
             input_size=input_size,
             hidden_size=hidden_size,
-            bidirectional=bidirectional
+            bidirectional=bidirectional,
+            num_layers=num_layers
         )
 
         self.classifier = nn.Sequential(
-            nn.Dropout(0.5),
-            nn.Linear(hidden_size * seq_len, 256),
+            nn.Dropout(0.25),
+            nn.Linear(hidden_size, 256),
             nn.BatchNorm1d(256),
             nn.ReLU(),
-            nn.Linear(256, num_cls)
+            nn.Linear(256, 64),
+            nn.ReLU(),
+            nn.Linear(64, num_cls)
         )
 
     def forward(self, x):
         """Encode to low dim first"""
-        x = torch.stack([self.encoder(b)[0] for b in x], 0)
+        x = torch.stack([self.encoder(b.view(b.shape[0], -1)) for b in x])  # 4 , 32, 256
         o, h = self.lstm(x)
+        o = torch.mean(o, dim=1)
         return self.classifier(o.flatten(1)), h
-
-# i = torch.randn(13, 53, 20)
-# m = ENcoder(input_size=20, seq_len=53)
-# o = m(i)
-# print(o[0].shape)

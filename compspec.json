@@ -368,18 +368,16 @@
       },
       "ICA-Classification_args": {
         "default": {
-          "num_class": 2,
+         "num_class": 2,
           "monitor_metric": "auc",
           "metric_direction": "maximize",
           "log_header": "Loss|AUC",
-          "full_comp_size": 100,
-          "spatial_dim": 140,
-          "window_size": 20,
+          "num_components": 100,
+          "temporal_size": 980,
+          "window_size": 10,
           "window_stride": 10,
-          "seq_len": 13,
           "data_file": "<Required!>",
           "labels_file": "<Required!>",
-          "components_file": "<Required!>",
           "split_files": [],
           "input_size": 256,
           "hidden_size": 384

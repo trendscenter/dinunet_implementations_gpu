@@ -1,10 +1,8 @@
 import os
 
-import h5py
 import numpy as np
 import pandas as pd
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 from coinstac_dinunet import COINNDataset, COINNTrainer, COINNDataHandle
 
@@ -20,43 +18,24 @@ class ICADataset(COINNDataset):
         super().__init__(**kw)
         self.labels = None
         self.data = None
-        self.full_comp_size = self.cache.setdefault('full_comp_size', 100)
-        self.spatial_dim = self.cache.setdefault('spatial_dim', 140)
-        self.window_size = self.cache.setdefault('window_size', 20)
-        self.window_stride = self.cache.setdefault('window_stride', 10)
-        self.seq_len = self.cache.setdefault('seq_len', 13)
-        self.h5py_key = self.cache['data_file'].split('_')[0] + "_dataset"
+        self.window_size = self.cache['window_size']
+        self.window_stride = self.cache['window_stride']
+        self.temporal_size = self.cache['temporal_size']
+        self.num_components = self.cache['num_components']
 
-    def load_index(self, ix):
-        if self.data is None:
-            self.labels = pd.read_csv(self.state['baseDirectory'] + os.sep + self.cache['labels_file'])
-            self.labels = self.labels.set_index('index')
+    def _load_indices(self, files, **kw):
+        data = np.load(self.path(cache_key='data_file'))
+        samples_per_sub = int(self.temporal_size / self.window_size)
+        self.data = np.zeros((data.shape[0], samples_per_sub, data.shape[1], self.window_size))
+        for i in range(data.shape[0]):
+            for j in range(samples_per_sub):
+                self.data[i, j, :, :] = data[i, :, (j * self.window_stride):(j * self.window_stride) + self.window_size]
 
-            hf = h5py.File(self.path(cache_key='data_file'), "r")
-            data = np.array(hf.get(self.h5py_key))
-            data = data.reshape((data.shape[0], self.full_comp_size, self.spatial_dim))
-
-            if self.cache.get('components_file'):
-                use_ix = read_lines(self.path(cache_key='components_file'))
-                data = data[:, use_ix, :]
-
-            data = torch.from_numpy(data)
-            n_comp = data.shape[1]
-            unfold = nn.Unfold(kernel_size=(1, self.window_size), stride=(1, self.window_stride))
-            data = unfold(data.unsqueeze(2)).reshape(data.shape[0], -1, n_comp, self.window_size)
-
-            assert (data.shape[1] == self.seq_len), \
-                f"Sequence len did not match: {data.shape[1]} vs {self.cache['seq_len']}"
-            self.data = data
-
-        y = self.labels.loc[ix][0]
-
-        """int64 could not be json serializable.  """
-        self.indices.append([ix, int(y - 1)])
+        self.indices += files
 
     def __getitem__(self, ix):
         data_index, y = self.indices[ix]
-        return {'inputs': self.data[data_index].clone(), 'labels': y}
+        return {'inputs': torch.from_numpy(self.data[data_index].copy()), 'labels': y}
 
 
 class ICATrainer(COINNTrainer):
@@ -65,14 +44,18 @@ class ICATrainer(COINNTrainer):
 
     def _init_nn_model(self):
         self.nn['net'] = ICALstm(
-            input_size=self.cache.setdefault('input_size', 128),
-            seq_len=self.cache.setdefault('seq_len', 13),
-            hidden_size=self.cache.setdefault('hidden_size', 256),
-            num_cls=self.cache.setdefault('num_class', 2)
+            window_size=self.cache['window_size'],  # 10
+            input_size=self.cache['input_size'],  # 256
+            hidden_size=self.cache['hidden_size'],  # 384
+            num_comps=self.cache['num_components'],  # 100
+            num_cls=self.cache['num_class'],
+            num_layers=self.cache.setdefault('num_layers', 1),
+            bidirectional=self.cache.setdefault('bidirectional', True)
         )
 
     def iteration(self, batch):
-        inputs, labels = batch['inputs'].to(self.device['gpu']).float(), batch['labels'].to(self.device['gpu']).long()
+        inputs, labels = batch['inputs'].to(self.device['gpu']).float(), batch['labels'].to(
+            self.device['gpu']).long()
         out, h = self.nn['net'](inputs)
         prob = torch.softmax(out, 1)
         loss = F.cross_entropy(out, labels)
@@ -89,7 +72,6 @@ class ICATrainer(COINNTrainer):
 
 class ICADataHandle(COINNDataHandle):
     def list_files(self):
-        ix = list(
-            pd.read_csv(self.state['baseDirectory'] + os.sep + self.cache['labels_file'])['index'].tolist()
-        )
-        return ix
+        ix_and_labels = pd.read_csv(
+            self.state['baseDirectory'] + os.sep + self.cache['labels_file']).values.tolist()
+        return ix_and_labels
