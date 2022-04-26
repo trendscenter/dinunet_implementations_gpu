@@ -54,7 +54,7 @@ class LSTM(nn.Module):
         self.num_direction = 2 if bidirectional else 1
         self.hidden_size = hidden_size // self.num_direction
         self.bias = bias
-        self.lstms = [LSTMCell(self.input_size, self.hidden_size) for _ in range(self.num_direction)]
+        self.lstms = nn.ModuleList([LSTMCell(self.input_size, self.hidden_size) for _ in range(self.num_direction)])
 
     def forward(self, x, h=None):
         hidden_seq, (h_t, c_t) = self.lstms[0](x, h)
