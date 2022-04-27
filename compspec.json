@@ -60,7 +60,8 @@
         "extensions": [
           "csv",
           "txt",
-          "h5",
+          "npy",
+          "npz",
           "json"
         ],
         "source": "member",
@@ -300,26 +301,15 @@
         "order": 21
       },
       "num_folds": {
-        "default": null,
+        "default": 0,
         "label": "Number of folds for K-Fold Cross Validation(Mutually exclusive with split ratio):",
         "type": "number",
         "source": "owner",
         "group": "NN Params",
         "order": 22
       },
-      "config_file": {
-        "default": null,
-        "label": "Computation configuration json(Will override the config below):",
-        "type": "string",
-        "source": "owner",
-        "group": "Computation",
-        "order": 23
-      },
       "FS-Classification_args": {
         "default": {
-          "labels_file": "<Required>",
-          "data_column": "freesurferfile",
-          "labels_column": "isControl",
           "input_size": 66,
           "hidden_sizes": [
             256,
@@ -341,13 +331,26 @@
           "variable": "task_id",
           "value": "FS-Classification"
         },
+        "order": 23
+      },
+      "FS-Classification_data_conf": {
+        "default": {
+          "labels_file": "<Required>",
+          "data_column": "freesurferfile",
+          "labels_column": "isControl"
+        },
+        "label": "FreeSurfer classification data config.",
+        "type": "object",
+        "source": "member",
+        "group": "Computation",
+        "conditional": {
+          "variable": "task_id",
+          "value": "FS-Classification"
+        },
         "order": 24
       },
       "VBM-Classification_args": {
         "default": {
-          "labels_file": "<Required>",
-          "data_column": "niifile",
-          "labels_column": "isControl",
           "model_scale": 1,
           "input_channel": 1,
           "num_class": 2,
@@ -366,6 +369,22 @@
         "group": "Computation",
         "order": 25
       },
+      "VBM-Classification_data_conf": {
+        "default": {
+          "labels_file": "<Required>",
+          "data_column": "niifile",
+          "labels_column": "isControl"
+        },
+        "label": "VBM classification data config.",
+        "type": "object",
+        "source": "member",
+        "conditional": {
+          "variable": "task_id",
+          "value": "VBM-Classification"
+        },
+        "group": "Computation",
+        "order": 26
+      },
       "ICA-Classification_args": {
         "default": {
          "num_class": 2,
@@ -376,8 +395,6 @@
           "temporal_size": 980,
           "window_size": 10,
           "window_stride": 10,
-          "data_file": "<Required!>",
-          "labels_file": "<Required!>",
           "split_files": [],
           "input_size": 256,
           "hidden_size": 384
@@ -390,7 +407,22 @@
           "value": "ICA-Classification"
         },
         "group": "Computation",
-        "order": 26
+        "order": 27
+      },
+      "ICA-Classification_data_conf": {
+        "default": {
+          "data_file": "<Required!>",
+          "labels_file": "<Required!>"
+        },
+        "label": "ICA classification data config.",
+        "type": "object",
+        "source": "member",
+        "conditional": {
+          "variable": "task_id",
+          "value": "ICA-Classification"
+        },
+        "group": "Computation",
+        "order": 28
       }
     },
     "output": {
