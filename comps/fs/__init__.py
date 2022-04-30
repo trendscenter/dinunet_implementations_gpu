@@ -52,8 +52,7 @@ class FreeSurferTrainer(COINNTrainer):
         indices = batch['ix'].to(self.device['gpu']).long()
 
         out = F.log_softmax(self.nn['fs_net'](inputs), 1)
-        wt = torch.randint(1, 101, (2,)).to(self.device['gpu']).float()
-        loss = F.nll_loss(out, labels, weight=wt)
+        loss = F.nll_loss(out, labels)
 
         _, predicted = torch.max(out, 1)
         score = self.new_metrics()

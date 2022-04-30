@@ -179,7 +179,7 @@
         "order": 11
       },
       "epochs": {
-        "default": 101,
+        "default": 51,
         "label": "Epochs:",
         "type": "number",
         "source": "owner",
@@ -277,7 +277,7 @@
         "order": 19
       },
       "patience": {
-        "default": 35,
+        "default": 51,
         "label": "Early stopping patience epochs:",
         "type": "number",
         "source": "owner",
