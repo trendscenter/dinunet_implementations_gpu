@@ -335,7 +335,7 @@
       },
       "FS-Classification_data_conf": {
         "default": {
-          "labels_file": "<Required>",
+          "labels_file": "covariates.csv",
           "data_column": "freesurferfile",
           "labels_column": "isControl"
         },
@@ -371,7 +371,7 @@
       },
       "VBM-Classification_data_conf": {
         "default": {
-          "labels_file": "<Required>",
+          "labels_file": "covariates.csv",
           "data_column": "niifile",
           "labels_column": "isControl"
         },
@@ -411,8 +411,8 @@
       },
       "ICA-Classification_data_conf": {
         "default": {
-          "data_file": "<Required!>",
-          "labels_file": "<Required!>"
+          "data_file": "data.npz",
+          "labels_file": "labels.csv"
         },
         "label": "ICA classification data config.",
         "type": "object",
